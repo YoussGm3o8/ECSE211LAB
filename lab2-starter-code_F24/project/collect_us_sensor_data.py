@@ -33,7 +33,7 @@ def collect_continuous_us_data():
         print("Touch sensor pressed")
         sleep(1)
         print("Starting to collect US distance samples")
-        while not TOUCH_SENSOR.is_pressed():
+        while TOUCH_SENSOR.is_pressed():
             us_data = US_SENSOR.get_value()  # Float value in centimeters 0, capped to 255 cm
             if us_data is not None: # If None is given, then data collection failed that time
                 print(us_data)
