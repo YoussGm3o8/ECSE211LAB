@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Lab3Chart" company="Mcgill University" webLink="http://" view-date="2024-10-01" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.3.3312" locale="en_CA">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="200" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="75" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="d1dd5fe6ca964b0192de353cbc78f886" name="Buttons Software" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true">
+            <task id="2" uid="007621edda5444419b6d14dc1ceea831" name="Flute programming" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+            <task id="4" uid="e4dff20aa65a461d966ae1243e3ff4c5" name="Emergency Stop programming" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+            <task id="1" uid="10de3ec6e5424f7d99f3d7c439d546f9" name="Drum programming" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="6" uid="a0af8f269f4b4a24b8da76727941171d" name="Test the the whole system" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="5" uid="5a59366e4d9841da95bbeba519b1878d" name="Building a drum" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
