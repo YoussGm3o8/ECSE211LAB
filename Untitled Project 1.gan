@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-29" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.3.3312" locale="en_CA">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="200" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="75" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="209" order="0"/>
+        <field id="1" name="Default role" width="85" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="91a8ab082f66463fa8fe72b789348386" name="Debug produce_drum_sound()" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="26" uid="a7a390686462400c98cdb280f11d3106" name="Debug stop_emergency() method" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="1" uid="7a60998dff384f0ba15cdf9fae7f33ea" name="Build the drum" meeting="false" start="2024-10-07" duration="1" complete="0" expand="true"/>
+        <task id="2" uid="9acf50e32c154e8fad84bbed8e9cfc1f" name="Write a method play_drum() to start the drum" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="3" uid="1dd621fbfa48454b88b99865caeb2640" name="Calibrate the desired frequency of the drum" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="4" uid="7a74fd33fd8c4820af28d6712bb5ce59" name="Test the durability of the drum while the drum is playing" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="5" uid="0b89e2f2f47f4075a46a9a6e319b32f3" name="Calibrate the touch sensors" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="7" uid="eb6e0470d9454330bad4f0ea750f824f" name="Write a method produce_sound() to produce sounds from combinations of touch sensors or individual sensors." meeting="false" start="2024-10-07" duration="1" complete="0" expand="true"/>
+        <task id="6" uid="f221ba0659994329a981d04c50017b70" name="Build the flute" meeting="false" start="2024-10-08" duration="1" complete="0" expand="true"/>
+        <task id="8" uid="5dcb33ccc4b04ea5b6966ea3966a3b0c" name="Test if the produce_flute_sound() work" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="9" uid="7bc700d9e71848a9859a09860abe924a" name="Optimize flute smoothness and sound" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="10" uid="6f9381e7114b48ba9ef0ecb7aef7bd9f" name="Write a method emergency_stop()" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="11" uid="fb08720cf45749faae767358046975f5" name="Integrate stop code into the main code to stop both drum and flute" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="24" uid="740350538a8f4ee0b4c7cabdacd7b610" name="Write a new stop_emergency() method" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="12" uid="9323ca33af2344dcadfdd158351d17a2" name="Test the flute is not playing during the emergency stop" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="13" uid="3d5385a5524b4023992c04bbd9dfbf92" name="Battery life duration and minimum level of battery needed" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="25" uid="494580aabb77483e8cf6bf3efa651e7e" name="Debug produce_flute_sound()" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="15" uid="d1bd6b94957d42b490982b778a2ecabc" name="Redesign the flute" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="18" uid="9d79d8f7aad24dfcb73f7da6352738e4" name="Redesign the physical drum" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="19" uid="6a421ac4025a4141a8f5bf6dca87c41d" name="Redesign the emergency stop" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="21" uid="8ddc94ef74ca47a7b8f7d1b9d3817168" name="Write a new produce_flute_sound() method" meeting="false" start="2024-10-01" duration="1" complete="0" expand="true"/>
+        <task id="22" uid="f4708333f7404d70bb8059059bfe0d9d" name="Write a new produce_drum_sound() method" meeting="false" start="2024-10-07" duration="1" complete="0" expand="true"/>
+        <task id="27" uid="44933ea4dd3a41f38e2fa0f53911ec3f" name="task_27" meeting="false" start="2024-09-30" duration="1" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
