@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-30" view-index="0" gantt-divider-location="338" resource-divider-location="300" version="3.3.3312" locale="en_CA">
+<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-30" view-index="1" gantt-divider-location="338" resource-divider-location="300" version="3.3.3312" locale="en_CA">
     <description/>
     <view zooming-state="default:2" id="gantt-chart">
         <field id="tpd3" name="Name" width="230" order="0"/>
@@ -96,7 +96,13 @@
             <task id="18" uid="9d79d8f7aad24dfcb73f7da6352738e4" name="Redesign the physical drum" meeting="false" start="2024-10-17" duration="2" complete="0" expand="true"/>
         </task>
     </tasks>
-    <resources/>
+    <resources>
+        <resource id="0" name="Youssef" function="Default:0" contacts="" phone=""/>
+        <resource id="1" name="Annabelle" function="Default:0" contacts="" phone=""/>
+        <resource id="2" name="Jyothsna" function="Default:0" contacts="" phone=""/>
+        <resource id="3" name="Khai" function="Default:0" contacts="" phone=""/>
+        <resource id="4" name="Ian" function="Default:0" contacts="" phone=""/>
+    </resources>
     <allocations/>
     <vacations/>
     <previous/>
