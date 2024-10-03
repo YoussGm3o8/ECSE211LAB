@@ -2,7 +2,7 @@
 
 PROJECT COMPONENTS:
 
-project/
-  debug/
-    button_manager_ex.py
-  button_manager.py
+project/ <br>
+&emsp;  debug/ <br>
+&emsp;&emsp;    button_manager_ex.py <br>
+&emsp;  button_manager.py <br>
