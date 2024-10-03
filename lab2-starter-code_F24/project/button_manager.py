@@ -2,9 +2,9 @@
 
 from utils.brick import TouchSensor, wait_ready_sensors
 
-class ButtonSystem:
+class ButtonManager:
     """ 
-    A class to manage the buttons on the robot see debug/buttons_test.py for an example of how to use it
+    A class to manage the buttons on the robot see debug/buttons_manager_ex.py for an example of how to use it
     """
 
     def __init__(self):

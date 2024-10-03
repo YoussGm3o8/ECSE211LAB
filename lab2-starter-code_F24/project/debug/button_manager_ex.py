@@ -1,4 +1,5 @@
 #ignore this file, it is not used in the project.
+#bottom of file for the example
 import pygame
 import time
 
@@ -42,7 +43,7 @@ class TouchSensor:
         return simulated_touch_sensor[self.port-1]
 
 
-class ButtonSystem:
+class ButtonManager:
     def __init__(self):
         self.callbacks = {}
         self.TOUCH_SENSOR1 = TouchSensor(1)
@@ -103,26 +104,26 @@ if __name__ == "__main__":
     pygame.display.set_mode((100, 100))
 
     #create the class to init the buttons inputs
-    bs = ButtonSystem()
+    bm = ButtonManager()
 
     #add your callbacks (functions to play sounds, etc)
     #see the documention in add_callback for arguments
-    bs.add_callback(lambda: print("0"), 0)
-    bs.add_callback(lambda: print("1"), 1)
-    bs.add_callback(lambda: print("2"), 2)
-    bs.add_callback(lambda: print("3"), 3)
-    bs.add_callback(lambda: print("4"), 4)
-    bs.add_callback(lambda: print("5"), 5)
-    bs.add_callback(lambda: print("6"), 6)
-    bs.add_callback(lambda: print("7"), 7)
-    bs.add_callback(lambda: print("8"), 8)
-    bs.add_callback(lambda: print("9"), 9)
-    bs.add_callback(lambda: print("10"), 10)
-    bs.add_callback(lambda: print("11"), 11)
-    bs.add_callback(lambda: print("12"), 12)
-    bs.add_callback(lambda: print("13"), 13)
-    bs.add_callback(lambda: print("14"), 14)
-    bs.add_callback(lambda: print("15"), 15)
+    bm.add_callback(lambda: print("0"), 0)
+    bm.add_callback(lambda: print("1"), 1)
+    bm.add_callback(lambda: print("2"), 2)
+    bm.add_callback(lambda: print("3"), 3)
+    bm.add_callback(lambda: print("4"), 4)
+    bm.add_callback(lambda: print("5"), 5)
+    bm.add_callback(lambda: print("6"), 6)
+    bm.add_callback(lambda: print("7"), 7)
+    bm.add_callback(lambda: print("8"), 8)
+    bm.add_callback(lambda: print("9"), 9)
+    bm.add_callback(lambda: print("10"), 10)
+    bm.add_callback(lambda: print("11"), 11)
+    bm.add_callback(lambda: print("12"), 12)
+    bm.add_callback(lambda: print("13"), 13)
+    bm.add_callback(lambda: print("14"), 14)
+    bm.add_callback(lambda: print("15"), 15)
 
     #main loop
     while(not flags[0]):
@@ -130,8 +131,8 @@ if __name__ == "__main__":
         simulate_buttons()
 
         #this is the important part
-        #bs.update() will call the appropriate callback when the buttons are pressed
-        bs.update()
+        #bm.update() will call the appropriate callback when the buttons are pressed
+        bm.update()
         time.sleep(0.05)
 
     pygame.quit()
