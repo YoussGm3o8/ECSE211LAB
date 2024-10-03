@@ -95,11 +95,18 @@ class ButtonSystem:
             return False
 
 if __name__ == "__main__":
+    """
+        Example usage of ButtonSystem
+    """
+
     pygame.init()
     pygame.display.set_mode((100, 100))
 
+    #create the class to init the buttons inputs
     bs = ButtonSystem()
 
+    #add your callbacks (functions to play sounds, etc)
+    #see the documention in add_callback for arguments
     bs.add_callback(lambda: print("0"), 0)
     bs.add_callback(lambda: print("1"), 1)
     bs.add_callback(lambda: print("2"), 2)
@@ -117,8 +124,13 @@ if __name__ == "__main__":
     bs.add_callback(lambda: print("14"), 14)
     bs.add_callback(lambda: print("15"), 15)
 
+    #main loop
     while(not flags[0]):
+        #ignore this
         simulate_buttons()
+
+        #this is the important part
+        #bs.update() will call the appropriate callback when the buttons are pressed
         bs.update()
         time.sleep(0.05)
 
