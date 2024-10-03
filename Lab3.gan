@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-30" view-index="1" gantt-divider-location="338" resource-divider-location="300" version="3.3.3312" locale="en_CA">
+<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-30" view-index="0" gantt-divider-location="468" resource-divider-location="300" version="3.3.3312" locale="en_US">
     <description/>
     <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd3" name="Name" width="230" order="0"/>
-        <field id="tpd4" name="Begin date" width="57" order="1"/>
-        <field id="tpd5" name="End date" width="35" order="2"/>
+        <field id="tpd3" name="Name" width="325" order="0"/>
+        <field id="tpd4" name="Begin date" width="77" order="1"/>
+        <field id="tpd5" name="End date" width="50" order="2"/>
         <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
@@ -46,17 +46,18 @@
         <task id="35" uid="198212eedfb24edfa9c0432b44db951e" name="Complete report" meeting="false" start="2024-10-21" duration="2" complete="0" expand="true">
             <depend id="34" type="2" difference="0" hardness="Strong"/>
         </task>
-        <task id="30" uid="e48abf314ed94cd9a5de588cdccf5bd6" name="Programming" meeting="false" start="2024-10-07" duration="2" complete="0" expand="true">
+        <task id="30" uid="e48abf314ed94cd9a5de588cdccf5bd6" name="Programming" meeting="false" start="2024-10-04" duration="3" complete="0" expand="true">
             <depend id="28" type="2" difference="0" hardness="Strong"/>
-            <task id="2" uid="9acf50e32c154e8fad84bbed8e9cfc1f" name="Write a method play_drum() to start the drum" meeting="false" start="2024-10-07" duration="1" complete="0" priority="4" expand="true">
+            <task id="36" uid="69d0b97b6b274114b5670eb5160c1857" name="Write ButtonManager class to handle callbacks from combinations of touch sensors or individual sensors" meeting="false" start="2024-10-04" duration="1" complete="0" expand="true">
+                <depend id="2" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="2" uid="9acf50e32c154e8fad84bbed8e9cfc1f" name="Write a callback method play_drum() to start the drum" meeting="false" start="2024-10-07" duration="1" complete="0" priority="4" expand="true">
                 <depend id="10" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="7" uid="eb6e0470d9454330bad4f0ea750f824f" name="Write a produce_sound() method" meeting="false" start="2024-10-07" duration="1" complete="0" expand="true">
+            <task id="7" uid="eb6e0470d9454330bad4f0ea750f824f" name="Write a produce_sound() callback method" meeting="false" start="2024-10-07" duration="1" complete="0" expand="true">
                 <depend id="10" type="2" difference="0" hardness="Strong"/>
-                <depend id="21" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="21" uid="8ddc94ef74ca47a7b8f7d1b9d3817168" name="Write a method produce_flute_sound() to produce sounds from combinations of touch sensors or individual sensors" meeting="false" start="2024-10-08" duration="1" complete="0" expand="true"/>
-            <task id="10" uid="6f9381e7114b48ba9ef0ecb7aef7bd9f" name="Write a method emergency_stop()" meeting="false" start="2024-10-08" duration="1" complete="0" priority="4" expand="true"/>
+            <task id="10" uid="6f9381e7114b48ba9ef0ecb7aef7bd9f" name="Write a callback method emergency_stop()" meeting="false" start="2024-10-08" duration="1" complete="0" priority="4" expand="true"/>
         </task>
         <task id="28" uid="75b107b565564bde96f79a490fdc3aea" name="Building" meeting="false" start="2024-10-09" duration="1" complete="0" expand="true">
             <depend id="31" type="2" difference="0" hardness="Strong"/>
@@ -82,7 +83,7 @@
             </task>
             <task id="13" uid="3d5385a5524b4023992c04bbd9dfbf92" name="Battery life duration and minimum level of battery needed" meeting="false" start="2024-10-15" duration="1" complete="0" expand="true"/>
         </task>
-        <task id="29" uid="52709bdd67b347ea88fe4decb3cae277" name="Debugging" meeting="false" start="2024-10-16" duration="1" complete="0" expand="false">
+        <task id="29" uid="52709bdd67b347ea88fe4decb3cae277" name="Debugging" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true">
             <depend id="32" type="2" difference="0" hardness="Strong"/>
             <task id="12" uid="9323ca33af2344dcadfdd158351d17a2" name="Test the flute is not playing during the emergency stop" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
             <task id="25" uid="494580aabb77483e8cf6bf3efa651e7e" name="Debug produce_flute_sound()" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
@@ -103,7 +104,10 @@
         <resource id="3" name="Khai" function="Default:0" contacts="" phone=""/>
         <resource id="4" name="Ian" function="Default:0" contacts="" phone=""/>
     </resources>
-    <allocations/>
+    <allocations>
+        <allocation task-id="36" resource-id="4" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="10" resource-id="4" function="Default:0" responsible="false" load="100.0"/>
+    </allocations>
     <vacations/>
     <previous/>
     <roles roleset-name="Default"/>
