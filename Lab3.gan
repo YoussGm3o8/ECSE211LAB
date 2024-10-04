@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-09-30" view-index="0" gantt-divider-location="468" resource-divider-location="300" version="3.3.3312" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="ECSE 211" company="" webLink="http://" view-date="2024-10-17" view-index="0" gantt-divider-location="683" resource-divider-location="300" version="3.3.3312" locale="en_CA">
     <description/>
-    <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd3" name="Name" width="325" order="0"/>
-        <field id="tpd4" name="Begin date" width="77" order="1"/>
-        <field id="tpd5" name="End date" width="50" order="2"/>
+    <view zooming-state="default:0" id="gantt-chart">
+        <field id="tpd3" name="Name" width="283" order="0"/>
+        <field id="tpd4" name="Begin date" width="158" order="1"/>
+        <field id="tpd5" name="End date" width="226" order="2"/>
         <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
@@ -12,8 +12,7 @@
         <option id="color.recent"><![CDATA[#00cc33 #0000ff #ff0033]]></option>
     </view>
     <view id="resource-table">
-        <field id="0" name="Name" width="210" order="0"/>
-        <field id="1" name="Default role" width="86" order="1"/>
+        <field id="0" name="Name" width="296" order="0"/>
     </view>
     <!-- -->
     <calendars>
@@ -39,9 +38,7 @@
             <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
             <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
         </taskproperties>
-        <task id="33" uid="b0e6a8e8e6b84f82bd9be551ec8d175d" name="DEMO" color="#ff0033" meeting="true" start="2024-10-21" duration="0" complete="0" priority="2" expand="true">
-            <depend id="35" type="2" difference="0" hardness="Strong"/>
-        </task>
+        <task id="33" uid="b0e6a8e8e6b84f82bd9be551ec8d175d" name="DEMO" color="#ff0033" meeting="true" start="2024-10-23" duration="0" complete="0" thirdDate="2024-10-23" thirdDate-constraint="1" priority="2" expand="true"/>
         <task id="34" uid="b1389f664b624aea888a71417ecd1c44" name="Lab report" color="#00cc33" meeting="true" start="2024-10-23" duration="0" complete="0" priority="4" expand="true"/>
         <task id="35" uid="198212eedfb24edfa9c0432b44db951e" name="Complete report" meeting="false" start="2024-10-21" duration="2" complete="0" expand="true">
             <depend id="34" type="2" difference="0" hardness="Strong"/>
@@ -59,12 +56,12 @@
             </task>
             <task id="10" uid="6f9381e7114b48ba9ef0ecb7aef7bd9f" name="Write a callback method emergency_stop()" meeting="false" start="2024-10-08" duration="1" complete="0" priority="4" expand="true"/>
         </task>
-        <task id="28" uid="75b107b565564bde96f79a490fdc3aea" name="Building" meeting="false" start="2024-10-09" duration="1" complete="0" expand="true">
+        <task id="28" uid="75b107b565564bde96f79a490fdc3aea" name="Building" meeting="false" start="2024-10-09" duration="1" complete="0" expand="false">
             <depend id="31" type="2" difference="0" hardness="Strong"/>
             <task id="1" uid="7a60998dff384f0ba15cdf9fae7f33ea" name="Build the drum" meeting="false" start="2024-10-09" duration="1" complete="0" expand="true"/>
             <task id="6" uid="f221ba0659994329a981d04c50017b70" name="Build the flute" meeting="false" start="2024-10-09" duration="1" complete="0" expand="true"/>
         </task>
-        <task id="31" uid="f7c4f168cf324d55bf16d88cad9128be" name="Opimization and testing" meeting="false" start="2024-10-10" duration="4" complete="0" expand="true">
+        <task id="31" uid="f7c4f168cf324d55bf16d88cad9128be" name="Opimization and testing" meeting="false" start="2024-10-10" duration="4" complete="0" expand="false">
             <depend id="29" type="2" difference="0" hardness="Strong"/>
             <task id="4" uid="7a74fd33fd8c4820af28d6712bb5ce59" name="Test the durability of the drum while the drum is playing" meeting="false" start="2024-10-10" duration="1" complete="0" expand="true">
                 <depend id="3" type="2" difference="0" hardness="Strong"/>
@@ -74,24 +71,26 @@
             </task>
             <task id="8" uid="5dcb33ccc4b04ea5b6966ea3966a3b0c" name="Test if the produce_flute_sound() work" meeting="false" start="2024-10-11" duration="1" complete="0" expand="true">
                 <depend id="9" type="2" difference="0" hardness="Strong"/>
+                <depend id="12" type="2" difference="0" hardness="Strong"/>
             </task>
             <task id="5" uid="0b89e2f2f47f4075a46a9a6e319b32f3" name="Calibrate the touch sensors" meeting="false" start="2024-10-11" duration="1" complete="0" expand="true">
                 <depend id="9" type="2" difference="0" hardness="Strong"/>
+                <depend id="12" type="2" difference="0" hardness="Strong"/>
             </task>
+            <task id="12" uid="9323ca33af2344dcadfdd158351d17a2" name="Test the flute is not playing during the emergency stop" meeting="false" start="2024-10-14" duration="1" complete="0" expand="true"/>
             <task id="9" uid="7bc700d9e71848a9859a09860abe924a" name="Optimize flute smoothness and sound" meeting="false" start="2024-10-14" duration="1" complete="0" expand="true">
                 <depend id="13" type="2" difference="0" hardness="Strong"/>
             </task>
             <task id="13" uid="3d5385a5524b4023992c04bbd9dfbf92" name="Battery life duration and minimum level of battery needed" meeting="false" start="2024-10-15" duration="1" complete="0" expand="true"/>
         </task>
-        <task id="29" uid="52709bdd67b347ea88fe4decb3cae277" name="Debugging" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true">
+        <task id="29" uid="52709bdd67b347ea88fe4decb3cae277" name="Debugging" meeting="false" start="2024-10-16" duration="1" complete="0" expand="false">
             <depend id="32" type="2" difference="0" hardness="Strong"/>
-            <task id="12" uid="9323ca33af2344dcadfdd158351d17a2" name="Test the flute is not playing during the emergency stop" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
             <task id="25" uid="494580aabb77483e8cf6bf3efa651e7e" name="Debug produce_flute_sound()" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
             <task id="0" uid="91a8ab082f66463fa8fe72b789348386" name="Debug produce_drum_sound()" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
             <task id="26" uid="a7a390686462400c98cdb280f11d3106" name="Debug stop_emergency() method" meeting="false" start="2024-10-16" duration="1" complete="0" expand="true"/>
         </task>
         <task id="32" uid="17dd24796f78405d8b82b0e2d5f53b79" name="Redesign" meeting="false" start="2024-10-17" duration="2" complete="0" expand="true">
-            <depend id="33" type="2" difference="0" hardness="Strong"/>
+            <depend id="35" type="2" difference="0" hardness="Strong"/>
             <task id="19" uid="6a421ac4025a4141a8f5bf6dca87c41d" name="Redesign the emergency stop" meeting="false" start="2024-10-17" duration="2" complete="0" expand="true"/>
             <task id="15" uid="d1bd6b94957d42b490982b778a2ecabc" name="Redesign the flute" meeting="false" start="2024-10-17" duration="2" complete="0" expand="true"/>
             <task id="18" uid="9d79d8f7aad24dfcb73f7da6352738e4" name="Redesign the physical drum" meeting="false" start="2024-10-17" duration="2" complete="0" expand="true"/>
