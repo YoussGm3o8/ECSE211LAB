@@ -1,3 +1,4 @@
+from button_manager import ButtonManager
 from utils.brick import Motor
 import time
 
@@ -19,12 +20,22 @@ def stop_motor():
 
 # Example usage
 if __name__ == "__main__":
-    print("Drum system running.")
-    
+    print("Drum system running with Button Manager.")
+
+    # Create an instance of ButtonManager
+    button_manager = ButtonManager()
+
+    # Map buttons to motor functions
+    # Button 4 press will start the motor
+    button_manager.add_callback(start_motor, 4)  # 4 => Button 1 (1000)
+    # Button 1,2,3,4 press will stop the motor
+    button_manager.add_callback(stop_motor, 15)   # 15 => Button 1,2,3,4 (1111)
+
     try:
-        # Start the motor
-        start_motor()
+        while True:
+            button_manager.update()  # Continuously check for button presses
+            sleep(0.1)  # Small delay to avoid excessive CPU usage
 
     except KeyboardInterrupt:
-        print("Program interrupted by user.")
-        stop_motor()  # Ensure motor is stopped when exiting
+        print("Program stopped by user.")
+        stop_motor()  # Safely stop the motor when exiting
