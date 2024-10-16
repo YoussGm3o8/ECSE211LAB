@@ -5,11 +5,12 @@ from playsound import playsound #remove this
 import time
 import os
 
+path = os.path.join("debug", "kick.wav") #remove this
+
 def kick():
     playsound(path) #change this
 
 if __name__ == "__main__":
-    path = os.path.join("debug", "kick.wav")
     dm = Drum(kick, 0.33)
     bm = ButtonManager()
     fl = flute.player()
