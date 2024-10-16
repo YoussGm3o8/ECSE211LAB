@@ -1,12 +1,12 @@
 from drum import Drum
 import flute
 from button_manager import ButtonManager
-from playsound import playsound
+from playsound import playsound #remove this
 import time
 import os
 
 def kick():
-    playsound(path)
+    playsound(path) #change this
 
 if __name__ == "__main__":
     path = os.path.join("debug", "kick.wav")
