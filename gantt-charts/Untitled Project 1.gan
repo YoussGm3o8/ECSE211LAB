@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="final_project_gantt" company="" webLink="http://" view-date="2024-11-09" view-index="0" gantt-divider-location="351" resource-divider-location="300" version="3.3.3312" locale="en_CA">
+    <description/>
+    <view zooming-state="default:0" id="gantt-chart">
+        <field id="tpd3" name="Name" width="200" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="75" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="6" uid="93c943b727ff4ade8a6e28376950fb16" name="Calibration" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true">
+            <depend id="9" type="2" difference="0" hardness="Strong"/>
+            <task id="12" uid="4aa2886ef961438d97be65f03e14538e" name="Motors" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true"/>
+            <task id="7" uid="0c4d1ea13b1d4d17a70c45b931b115a8" name="US_sensors" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true"/>
+            <task id="5" uid="5c65705c9c2746e9882703b113da5cd7" name="Color sensor" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true"/>
+            <task id="14" uid="28ab47d361d046728a1a6b179f1a5a53" name="Gyrosensor" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="3" uid="77f7702d0ea64f438b00738e48c8ead7" name="Building" meeting="false" start="2024-11-12" duration="1" complete="0" expand="true">
+            <depend id="1" type="2" difference="0" hardness="Strong"/>
+            <task id="21" uid="29f6f4df75ec4b58b5b7e36e816a8947" name="obstacle detection" meeting="false" start="2024-11-12" duration="1" complete="0" expand="true"/>
+            <task id="20" uid="38ac38da74ac4319b9072dce7c801190" name="Hatch subsystem" meeting="false" start="2024-11-12" duration="1" complete="0" expand="true"/>
+            <task id="19" uid="bc4efbf8c6234ed190efaa54e7c1eec9" name="Car subsystem" meeting="false" start="2024-11-12" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="1" uid="5b924e7cbfe14ed08f8ed6a274cad498" name="Subsystem Testing" meeting="false" start="2024-11-18" duration="1" complete="0" expand="true">
+            <task id="8" uid="8ef5c5580d9c47f5af956a1162b8c3e6" name="Turning accuracy" meeting="false" start="2024-11-18" duration="1" complete="0" expand="true"/>
+            <task id="16" uid="77e6a22970b14ba3abe18e5716205ba4" name="Orientation using 2 color sensors" meeting="false" start="2024-11-18" duration="1" complete="0" expand="true"/>
+            <task id="18" uid="1d91d22680b740bb8fcd75b6c2a3d7c2" name="Ultrasonic Sonar" meeting="false" start="2024-11-18" duration="1" complete="0" expand="true"/>
+            <task id="15" uid="7ba621da7afb4f619f1e24b7388de0f3" name="Orientation using gyroscope and One color sensor" meeting="false" start="2024-11-18" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="9" uid="8b278d5f85334f1f895ea4dc1e3efeb3" name="Programming" meeting="false" start="2024-11-18" duration="3" complete="0" expand="true">
+            <task id="11" uid="35cb5f86e80d421cba9f90992969d06e" name="simulation environment" meeting="false" start="2024-11-18" duration="2" complete="0" expand="true"/>
+            <task id="2" uid="c80041722bfb443f9fb8beaa5710fb27" name="Color Classification" meeting="false" start="2024-11-19" duration="2" complete="0" expand="true">
+                <notes><![CDATA[Writing software for Color sensors]]></notes>
+            </task>
+            <task id="10" uid="db90863178a046699f6881f09eed99f3" name="Object Detection" meeting="false" start="2024-11-19" duration="2" complete="0" expand="true">
+                <notes><![CDATA[writing software for US_sensors]]></notes>
+            </task>
+            <task id="13" uid="84d51bcb303243eb817510bd19c22f0f" name="Navigation Algorithm" meeting="false" start="2024-11-19" duration="2" complete="0" expand="true"/>
+        </task>
+        <task id="25" uid="69727f102c0044f1a2cd974c8d1bfd69" name="" meeting="false" start="2024-11-11" duration="1" complete="0" expand="true"/>
+        <task id="4" uid="e449b3c2a61e4b0b8d3d21944b391fe8" name="Integration and full design testing" meeting="false" start="2024-11-25" duration="1" complete="0" expand="true">
+            <task id="22" uid="3e265f562c5c478fb4c243cb47a903c9" name="Assemble all components" meeting="false" start="2024-11-25" duration="1" complete="0" expand="true"/>
+            <task id="23" uid="89c31e732d4b4d44a7373e6e6f54a3af" name="test the complete robot" meeting="false" start="2024-11-25" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="24" uid="4cb8e2887b4343759e6e37da1e41b206" name="iterative testing and redesign/reprogramming" meeting="false" start="2024-11-26" duration="4" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
