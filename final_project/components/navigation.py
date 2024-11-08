@@ -1,5 +1,3 @@
-from typing import LiteralString
-
 from utils.brick import Motor
 
 # Constants
