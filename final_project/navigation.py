@@ -36,6 +36,7 @@ def move_forward(degrees, dps, convertion=False):
     Argument:
         degrees: number of degrees to turn wheels
         dps: degrees per second
+        convertion: if True, degrees will be converted to car degrees (360 => 1 car turn)
     """
     if not convertion:
         lwheel.set_limits(0, dps)
@@ -71,6 +72,7 @@ def turn_left(degrees, dps, convertion=False):
     Arguments:
         degree: the wheels will rotate this number of degrees
         dps: degrees per seconds
+        convertion: if True, degrees will be converted to car degrees (360 => 1 car turn)
 
     NOTE: negative degrees will make the car turn right
     """
