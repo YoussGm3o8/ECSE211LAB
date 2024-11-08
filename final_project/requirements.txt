@@ -1,0 +1,4 @@
+simpleaudio
+matplotlib
+numpy
+
