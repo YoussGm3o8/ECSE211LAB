@@ -1,4 +1,5 @@
 import socket
+import pickle
 """
 This tool is used for the raspberry pi to send data to a computer.
 (This script is the server side of the communication e.g. your computer)
@@ -19,21 +20,32 @@ class Server:
 
         self.client_socket, self.client_address = self.server_socket.accept()
         print('Connected to {}'.format(self.client_address))
+        self.enable = True
 
 
     def __iter__(self):
         try:
-            while True:
+            while self.enable:
                 data = self.client_socket.recv(1024)
                 if not data:
                     break
-                yield data.decode()
 
-                response = '0'
-                self.client_socket.send(response.encode())
-        except KeyboardInterrupt as KI:
+                try:
+                    yield pickle.loads(data)
+                except Exception as e:
+                    print(e)
+                finally:
+                    continue
+
+        except KeyboardInterrupt:
             print("KeyboardInterrupt")
         finally:
             self.client_socket.close()
             self.server_socket.close()
             print('Connection closed')
+
+    def exit(self):
+        self.client_socket.close()
+        self.server_socket.close()
+        print('Connection closed')
+        self.enable = False

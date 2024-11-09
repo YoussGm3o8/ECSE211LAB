@@ -1,4 +1,5 @@
 import socket
+import pickle
 
 """
 This tool is used for the raspberry pi to send data to a computer.
@@ -20,13 +21,12 @@ class Client:
         self.client_socket.connect((SERVER_IP, PORT))
         print('Connected to server {} using port {}'.format(SERVER_IP, PORT))
     
-    def send(self, message : str) -> str:
-        if len(message) > 1024:
+    def send(self, message):
+        s = pickle.dumps(message)
+        if len(s) > 1024:
             return 'Message was not sent because it is too long. Maximum length is 1024 bytes.'
 
-        self.client_socket.send(message.encode())
-        response = self.client_socket.recv(1024).decode()
-        return response
+        self.client_socket.send(s)
 
     def exit(self):
         self.client_socket.close()

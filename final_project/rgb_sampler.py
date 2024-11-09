@@ -2,7 +2,7 @@ from components.color_detection import color_sensor as cs
 from utils.brick import reset_brick, wait_ready_sensors
 import numpy as np
 import matplotlib.pyplot as plt
-
+import time
 
 try:
     wait_ready_sensors(True)
@@ -16,6 +16,7 @@ try:
             plt.clf()
         except Exception:
             print(Exception)
+        time.sleep(0.05)
 
         #user exit exception
 except KeyboardInterrupt:
