@@ -1,4 +1,5 @@
 simpleaudio
-matplotlib
+pygame
 numpy
+matplotlib
 
