@@ -1,6 +1,5 @@
 from utils.brick import EV3UltrasonicSensor
 from common.filters import Median_Filter
-from components.wrappers import Sensor
 # Constants
 US_SENSOR_PORT = 1
 FILTER_SIZE = 300 #size of filter for the median
@@ -9,7 +8,7 @@ SKIP_BATCH = 1
 # Components
 
 #TODO: handle errors (None values) here
-class US_Sensor(EV3UltrasonicSensor, Sensor):
+class US_Sensor(EV3UltrasonicSensor):
     def __init__(self, port):
         super().__init__(port)
         self.wait_ready()

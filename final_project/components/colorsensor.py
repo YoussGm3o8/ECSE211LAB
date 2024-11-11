@@ -1,12 +1,13 @@
 from utils.brick import EV3ColorSensor
-from components.wrappers import Sensor
+from components.wrappers import Normalized_Sensor
+from common.normalization import RGB_Normalizer
 # Constants
 
-COLOR_SENSOR_PORT = 2
+COLOR_SENSOR_PORT = 1
 
 # Components
 
-class Color_Sensor(EV3ColorSensor, Sensor):
+class Color_Sensor(EV3ColorSensor):
     def __init__(self, port):
         super().__init__(port)
         self.wait_ready()
@@ -27,6 +28,4 @@ class Color_Sensor(EV3ColorSensor, Sensor):
                 continue
             yield rgb
 
-
-color_sensor = Color_Sensor(COLOR_SENSOR_PORT)
-
+color_sensor = Color_Sensor(COLOR_SENSOR_PORT) 

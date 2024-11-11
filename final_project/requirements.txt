@@ -2,4 +2,4 @@ simpleaudio
 pygame
 numpy
 matplotlib
-
+scikit-learn

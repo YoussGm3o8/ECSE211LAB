@@ -16,7 +16,7 @@ PORT = 22005
 
 class Client:
     def __init__(self):
-
+        print(f"initiating connection to {SERVER_IP}...")
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((SERVER_IP, PORT))
         print('Connected to server {} using port {}'.format(SERVER_IP, PORT))

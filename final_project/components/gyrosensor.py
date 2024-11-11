@@ -1,9 +1,8 @@
 from utils.brick import EV3GyroSensor
-from components.wrappers import Sensor
 
 GYRO_PORT = 2
 
-class GYRO_Sensor(EV3GyroSensor, Sensor):
+class GYRO_Sensor(EV3GyroSensor):
     def __init__(self, port):
         super().__init__(port)
         self.wait_ready()

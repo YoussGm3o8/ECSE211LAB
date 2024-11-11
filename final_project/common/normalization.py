@@ -1,4 +1,3 @@
-
 class Normalizer:
     def normalize(self, value):
         raise NotImplementedError("normalize method not implemented")
@@ -6,6 +5,8 @@ class Normalizer:
 class RGB_Normalizer(Normalizer):
     def normalize(self, value) -> tuple:
         tot = value[0] + value[1] + value[2]
+        if tot == 0:
+            return (0, 0, 0)
         r = value[0] * 255 / tot
         g = value[1] * 255 / tot
         b = value[2] * 255 / tot
