@@ -1,10 +1,12 @@
 from utils.brick import EV3GyroSensor
+from components.wrappers import Sensor
 
 GYRO_PORT = 2
 
-class GYRO_Sensor(EV3GyroSensor):
+class GYRO_Sensor(EV3GyroSensor, Sensor):
     def __init__(self, port):
         super().__init__(port)
+        self.wait_ready()
 
     def fetch(self):
         value = super().get_abs_measure()

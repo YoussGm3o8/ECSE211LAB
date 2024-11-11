@@ -11,25 +11,25 @@ BATCH_SIZE = 5
 
 cl = Client()
 buffer = []
-wait_ready_sensors(True)
+#wait_ready_sensors(True) #not needed anymore
 
 us_sensor = Filtered_Sensor(us_sensor, Median_Filter(FILTER_SIZE))
 g_sensor = Filtered_Sensor(g_sensor, Mean_Filter(FILTER_SIZE))
 
-# try:
-while True:
-    for i in range(BATCH_SIZE):
-        time.sleep(0.05)
-        us_sensor.update()
-        g_sensor.update()
+try:
+    while True:
+        for i in range(BATCH_SIZE):
+            time.sleep(0.05)
+            us_sensor.update()
+            g_sensor.update()
 
-    buffer.append((int(us_sensor.get()), int(g_sensor.get())))
+        buffer.append((int(us_sensor.get()), int(g_sensor.get())))
 
-    if len(buffer) == 50:
-        cl.send(buffer)
-        buffer.clear()
-# except Exception as e:
-#     print(e)
-# finally:
-#     cl.exit()
-#     reset_brick()
+        if len(buffer) == 50:
+            cl.send(buffer)
+            buffer.clear()
+except Exception as e:
+    print(e)
+finally:
+    cl.exit()
+    reset_brick()

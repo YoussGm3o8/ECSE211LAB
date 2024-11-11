@@ -1,5 +1,5 @@
 from utils.brick import Motor
-
+from utils.brick import wait_ready_sensors
 # Constants
 
 LEFT_WHEEL_PORT = "C"
@@ -11,7 +11,6 @@ WHEEL_TO_CAR_DEGREE_RATIO = 1.9722
 
 lwheel = Motor(LEFT_WHEEL_PORT)
 rwheel = Motor(RIGHT_WHEEL_PORT)
-
 
 # functions
 

@@ -1,13 +1,12 @@
-from components.color_detection import color_sensor as cs
-from utils.brick import reset_brick, wait_ready_sensors
+from components.color import color_sensor as cs
+from utils.brick import reset_brick
 import numpy as np
 import matplotlib.pyplot as plt
 import time
 
 try:
-    wait_ready_sensors(True)
     while(True):
-        data = cs.get_rgb()
+        data = cs.fetch()
         try:
             plt.imshow(np.array(data).reshape((1,1,3)))
             #give delay
