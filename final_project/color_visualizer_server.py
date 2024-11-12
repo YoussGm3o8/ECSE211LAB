@@ -1,7 +1,7 @@
 from communication.server import Server
 import numpy as np
 import matplotlib.pyplot as plt
-from data.svm import colors, clf
+from data.predictor.svm import colors, clf
 # Function to draw a line from the origin with specified length and angle
 
 # Main loop

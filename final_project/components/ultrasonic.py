@@ -29,4 +29,3 @@ class US_Sensor(EV3UltrasonicSensor):
             yield v
 
 us_sensor = US_Sensor(US_SENSOR_PORT)
-

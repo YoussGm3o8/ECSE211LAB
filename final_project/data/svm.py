@@ -1,18 +1,6 @@
 from sklearn import svm
 import numpy as np
-
-#change the root directory so that other script can import this
-import os
-#you will need to revert at the end
-os_main = os.path.dirname(os.path.abspath(__file__))
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-#open green.csv to numpy
-green = np.genfromtxt('green.csv', delimiter=',', skip_header=1)
-blue = np.genfromtxt('blue.csv', delimiter=',', skip_header=1)
-red = np.genfromtxt('red.csv', delimiter=',', skip_header=1)
-yellow = np.genfromtxt('yellow.csv', delimiter=',', skip_header=1)
-orange = np.genfromtxt('orange.csv', delimiter=',', skip_header=1)
-purple = np.genfromtxt('purple.csv', delimiter=',', skip_header=1)
+from color_numpy import green, blue, red, yellow, orange, purple
 
 colors = {'green': 0, 'blue': 1, 'red': 2, 'yellow': 3, 'orange': 4, 'purple': 5}
 
@@ -31,5 +19,3 @@ print(y)
 clf = svm.SVC(decision_function_shape='ovo')
 clf.fit(x, y)
 
-#reset the root directory to the original
-os.chdir(os_main)
