@@ -13,6 +13,9 @@ class GYRO_Sensor(EV3GyroSensor):
             raise TypeError("None caught")
         return value
     
+    def reset(self):
+        self.reset_measure()
+    
     def __iter__(self):
         """
         Change gyro sensor mode.
