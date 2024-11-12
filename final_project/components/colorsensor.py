@@ -19,11 +19,14 @@ class Color_Sensor(EV3ColorSensor):
             self.wait_ready()
         val = self.get_value() #DONT USE sensor.get_value() to get sensor data use this fetch method instead
         if val is None:
-            raise TypeError("None caught")
+            return None
         return val[:-1]
-
-    def predict(self, raw_rgb):
-        return predict(raw_rgb)
+    
+    def predict(self):
+        pred = predict(self.fetch())
+        while pred is None:
+            pred = predict(self.fetch())
+        return pred
 
     def __iter__(self):
         while True:

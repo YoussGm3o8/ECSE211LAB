@@ -9,8 +9,9 @@ class GYRO_Sensor(EV3GyroSensor):
 
     def fetch(self):
         value = super().get_abs_measure()
-        if value is None:
-            raise TypeError("None caught")
+        while value is None:
+            value = super().get_abs_measure()
+        
         return value
     
     def reset(self):

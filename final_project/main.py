@@ -9,7 +9,7 @@ from components.gyrosensor import g_sensor
 import components.navigation as nav
 from components.navigation import wheel_left, wheel_right
 from components.ultrasonic import us_sensor
-from components.colorsensor import color_sensor, left_color_sensor
+from components.colorsensor import color_sensor
 
 # g_sensor is the gyrosensor. Use g_sensor.fetch() to get data
 
@@ -47,36 +47,56 @@ def get_front_distance():
 
     
 def correct_direction(degrees):
-    if degrees < -1:
+    if degrees < -10:
         nav.turn_right()
-    if degrees > 1:
+    if degrees > 10:
         nav.turn_left()
     else:
         pass
     
 def main():
-    current_direction = g_sensor.fetch()
+    new_angle = 0
+    moving_f = True
     try:
-        while True:
-            print(get_front_distance())
+
+        while True:       
             nav.activate_wheels("forwards")
-            if get_front_distance() < 10 : #safety
-                nav.stop_wheels()
-                
+            while True:
+                d = get_front_distance()
+                print(d)
+                if d < 15:
+                    break
+                time.sleep(0.05)
+                c = color_sensor.predict()
+
+                print(c)
+                if c == 'b':
+                    nav.stop_wheels()
+                    nav.activate_wheels("right")
+                    while c == 'b':
+                        c = color_sensor.predict()
+                        print(c)
+                        if c != 'b':
+                            break
+                    nav.stop_wheels()
+                    nav.activate_wheels("forwards")
+                    
+
+
+        
             if get_front_distance() < 15 : # this should be changed to internally calculate how far the robot moves,
-                                           # measure wheel diameter and rotations per second, get distance/second aka speed in cm.
-                                           # not feasible, robot will turn to avoid cubes and water...
-                print(get_front_distance())
-                nav.stop_wheels()
-                # TODO add detect cube color and pickup here or something
-                while current_direction < 90 :
-                    nav.turn_right()
-                    current_direction = g_sensor.fetch()
-                    print("current_direction:", current_direction)
-                current_direction = 0
-                #g_sensor.reset()
+                    print(get_front_distance())
+                    nav.stop_wheels()
+                    # TODO add detect cube color and pickup here or something
+                    
+                    while (((g_sensor.fetch() - new_angle) % 360) < 90) :
+                        nav.turn_right()
+                    new_angle = g_sensor.fetch()
+            
             correct_direction(g_sensor.fetch())
     finally:
         reset_brick()
         
         
+if __name__ == "__main__":
+    main()
