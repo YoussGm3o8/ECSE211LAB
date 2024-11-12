@@ -1,7 +1,7 @@
 """
 main.py
 """
-from utils.brick import EV3UltrasonicSensor, wait_ready_sensors
+from utils.brick import EV3UltrasonicSensor, wait_ready_sensors, reset_brick
 import time
 
 from components import ultrasonic
@@ -56,22 +56,27 @@ def correct_direction(degrees):
     
 def main():
     current_direction = g_sensor.fetch()
-    while True:
-        print(get_front_distance())
-        nav.activate_wheels("forwards")
-        if get_front_distance() < 10 : #safety
-            nav.stop_wheels()
-            
-        if get_front_distance() < 15 : # this should be changed to internally calculate how far the robot moves,
-                                       # measure wheel diameter and rotations per second, get distance/second aka speed in cm.
-                                       # not feasible, robot will turn to avoid cubes and water...
+    try:
+        while True:
             print(get_front_distance())
-            nav.stop_wheels()
-            # TODO add detect cube color and pickup here or something
-            while current_direction < 90 :
-                nav.turn_right()
-                current_direction = g_sensor.fetch()
-                print("current_direction:", current_direction)
-            current_direction = 0
-            g_sensor.reset()
-        correct_direction(g_sensor.fetch())
+            nav.activate_wheels("forwards")
+            if get_front_distance() < 10 : #safety
+                nav.stop_wheels()
+                
+            if get_front_distance() < 15 : # this should be changed to internally calculate how far the robot moves,
+                                           # measure wheel diameter and rotations per second, get distance/second aka speed in cm.
+                                           # not feasible, robot will turn to avoid cubes and water...
+                print(get_front_distance())
+                nav.stop_wheels()
+                # TODO add detect cube color and pickup here or something
+                while current_direction < 90 :
+                    nav.turn_right()
+                    current_direction = g_sensor.fetch()
+                    print("current_direction:", current_direction)
+                current_direction = 0
+                #g_sensor.reset()
+            correct_direction(g_sensor.fetch())
+    finally:
+        reset_brick()
+        
+        

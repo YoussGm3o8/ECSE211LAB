@@ -1,12 +1,13 @@
 from utils.brick import Motor
 from utils.brick import wait_ready_sensors
+import time
 # Constants
 
 WHEEL_ACTION = {"backwards" : [180, 180], "forwards" : [-180, -180],
                 "right" : [-180, 180], "left" : [180, -180]}
 
 LEFT_WHEEL_PORT = "C"
-RIGHT_WHEEL_PORT = "B"
+RIGHT_WHEEL_PORT = "D"
 
 WHEEL_TO_CAR_DEGREE_RATIO = 1.9722
 
