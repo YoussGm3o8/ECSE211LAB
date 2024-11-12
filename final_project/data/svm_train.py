@@ -2,7 +2,7 @@ from sklearn import svm
 import numpy as np
 from color_numpy import green, blue, red, yellow, orange, purple
 import pickle
-
+import os
 
 def get_weight(group0, group1):
     x1 = np.array(group1).reshape((-1, 3))
@@ -35,7 +35,10 @@ if __name__ == '__main__':
         weight, bias = get_weight(group1, group0)
         button1_weights.append((weight, bias))
 
-    with open('weights/button1_w.pkl', 'wb') as f:
+
+    #get path of this file directory
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(path, 'weights/button1_w.pkl'), 'wb') as f:
         pickle.dump(button1_weights, f)
         print("Weights saved in weights/button1_w.pkl")
 

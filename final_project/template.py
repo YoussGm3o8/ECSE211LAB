@@ -17,3 +17,6 @@ from components.colorsensor import color_sensor
 # nav is a file with methods defined in it (Not an object like the ones above)
 
 #if you need more sensors look at the files imported to see how each sensor was initiated
+
+
+

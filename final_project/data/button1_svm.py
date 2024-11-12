@@ -11,9 +11,11 @@ Decision function: (based on priority)
 """
 
 import pickle
+import os
 # load the weights from weights/button1_w.pkl
 
-with open('weights/button1_w.pkl', 'rb') as f:
+path = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(path, 'weights/button1_w.pkl'), 'rb') as f:
     weights = pickle.load(f)
 
 """decision_function = [

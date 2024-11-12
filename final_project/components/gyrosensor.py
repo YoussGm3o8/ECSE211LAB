@@ -1,6 +1,6 @@
 from utils.brick import EV3GyroSensor
 
-GYRO_PORT = 2
+GYRO_PORT = 4
 
 class GYRO_Sensor(EV3GyroSensor):
     def __init__(self, port):

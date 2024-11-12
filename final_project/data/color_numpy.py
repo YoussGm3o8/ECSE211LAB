@@ -37,6 +37,16 @@ if __name__ == "__main__":
     #scatter plot 3d
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(blue_norm[:,0], blue_norm[:,1], blue_norm[:,2], c='b', marker='o', label='blue')
+    ax.scatter(red_norm[:,0],red_norm[:,1], red_norm[:,2], c='r', marker='o', label='red')
+    ax.scatter(yellow_norm[:,0], yellow_norm[:,1], yellow_norm[:,2], c='y', marker='o', label='yellow')
+    ax.scatter(orange_norm[:,0], orange_norm[:,1], orange_norm[:,2], c='orange', marker='o', label='orange')
+    ax.scatter(purple_norm[:,0], purple_norm[:,1], purple_norm[:,2], c='purple', marker='o', label='purple')
+    ax.scatter(green_norm[:,0], green_norm[:,1], green_norm[:,2], c='g', marker='o', label='green')
+    plt.show()
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
     ax.scatter(green[:,0], green[:,1], green[:,2], c='g', marker='o', label='green')
     ax.scatter(blue[:,0], blue[:,1], blue[:,2], c='b', marker='o', label='blue')
     ax.scatter(red[:,0], red[:,1], red[:,2], c='r', marker='o', label='red')
