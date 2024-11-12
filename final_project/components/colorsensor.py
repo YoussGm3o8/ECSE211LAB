@@ -4,8 +4,7 @@ from common.normalization import RGB_Normalizer
 from data.button1_svm import predict
 # Constants
 
-LEFT_COLOR_SENSOR_PORT = 3
-RIGHT_COLOR_SENSOR_PORT = 2
+COLOR_SENSOR_PORT = 2
 
 # Components
 
@@ -33,5 +32,4 @@ class Color_Sensor(EV3ColorSensor):
                 continue
             yield rgb
 
-color_sensor = Color_Sensor(RIGHT_COLOR_SENSOR_PORT) 
-left_color_sensor = Color_Sensor(LEFT_COLOR_SENSOR_PORT) 
+color_sensor = Color_Sensor(COLOR_SENSOR_PORT) 

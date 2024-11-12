@@ -10,9 +10,8 @@ buffer_file = []
 
 try:
     for i, rgb in enumerate(color_sensor):
+        print(color_sensor.predict(rgb))
         time.sleep(0.05)
-
-        print(rgb, "raw")
         rgb = list(map(int, rgb))
         buffer.append(rgb)
         buffer_file.append(rgb)
