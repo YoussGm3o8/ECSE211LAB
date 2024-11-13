@@ -5,7 +5,6 @@ DESCRIPTION: A robot that avoids wall and water
 """
 from utils.brick import reset_brick
 import time
-import typing
 from components.gyrosensor import g_sensor
 import components.navigation as nav
 from components.ultrasonic import us_sensor
