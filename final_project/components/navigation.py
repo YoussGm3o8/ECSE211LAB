@@ -26,7 +26,7 @@ def stop_wheels():
     wheel_left.set_dps(0)
     wheel_right.set_dps(0)
 
-#turns right for 0.1 seconds
+#turns right for 0.05 seconds
 def turn_right():
     activate_wheels("right")
     time.sleep(0.05)
@@ -38,9 +38,25 @@ def turn_left():
     time.sleep(0.1)
     stop_wheels()
 
-hand = Motor("C")
-hatch = Motor("A")
-wait_ready_sensors()
+#hand Motor and hatch Motor relocated to objects.py
 
-def move(sensor, degree=20):
-    sensor.set_position_relative(degree)
+def stop():
+    wheel_left.set_dps(0)
+    wheel_right.set_dps(0)
+
+def forward(dps):
+    """
+    move forward continuously
+    MAX: 1250 degree per seconds
+    """
+    wheel_left.set_dps(-dps)
+    wheel_right.set_dps(-dps)
+
+def turn(dps):
+    """
+    turn left continuously
+    MAX: 1250 degree per seconds
+    """
+    wheel_left.set_dps(dps)
+    wheel_right.set_dps(-dps)
+

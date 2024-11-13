@@ -2,12 +2,15 @@ from utils.brick import EV3ColorSensor
 from components.wrappers import Normalized_Sensor
 from common.normalization import RGB_Normalizer
 from data.button1_svm import predict
+import time
+from deprecated import deprecated
 # Constants
 
 COLOR_SENSOR_PORT = 2
 
 # Components
 
+#WARNING: Do not handle None values here. Handle this in the robot logic loop
 class Color_Sensor(EV3ColorSensor):
     def __init__(self, port):
         super().__init__(port)
@@ -20,13 +23,16 @@ class Color_Sensor(EV3ColorSensor):
         val = self.get_value() #DONT USE sensor.get_value() to get sensor data use this fetch method instead
         if val is None:
             return None
-        return val[:-1]
-    
-    def predict(self):
-        pred = predict(self.fetch())
-        while pred is None:
-            pred = predict(self.fetch())
-        return pred
+        return predict(val[:-1])
+
+    @deprecated(reason="This function is unsafe because it hides None values from caller. Use fetch instead.")
+    def predict(self, value=None):
+        if value is not None:
+            return predict(value)
+        v = self.fetch()
+        while v is None:
+            v = self.fetch()
+        return v
 
     def __iter__(self):
         while True:

@@ -24,9 +24,6 @@ from components.colorsensor import color_sensor
 sensor_claw_distance = 3
 robot_length = 10
 
-
-
-ultra_front = EV3UltrasonicSensor(1) # port S1
 #ultra_side = EV3UltrasonicSensor(2) # port S2
 sensor_claw_distance = 3
 #sensor_side_distance = 1
@@ -38,7 +35,7 @@ wheel_right.set_dps(0)
 
 
 def get_front_distance():
-    return (ultra_front.get_value())
+    return us_sensor.fetch()
 
 #def get_side_distance():
 #   return (ultra_side.get_value())

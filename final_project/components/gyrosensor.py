@@ -1,22 +1,21 @@
 from utils.brick import EV3GyroSensor
+import time
 
 GYRO_PORT = 4
 
+
+#WARNING: Do not handle None values here. Handle this in the robot logic loop
 class GYRO_Sensor(EV3GyroSensor):
     def __init__(self, port):
         super().__init__(port)
         self.wait_ready()
 
     def fetch(self):
-        value = super().get_abs_measure()
-        while value is None:
-            value = super().get_abs_measure()
-        
-        return value
-    
+        return self.get_abs_measure()
+
     def reset(self):
         self.reset_measure()
-    
+
     def __iter__(self):
         """
         Change gyro sensor mode.

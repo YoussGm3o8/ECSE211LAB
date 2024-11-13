@@ -1,3 +1,4 @@
+from numpy import select
 from common.filters import Filter
 from common.normalization import Normalizer
 
@@ -9,15 +10,30 @@ class Filtered_Sensor:
         self.buffer = [] # this buffer is used to filter in batches
 
     def update(self):
-        self.buffer.append(self.sensor.fetch())
+        """
+        returns: True if the buffer has successfully updated
+        False, otherwise.
+        """
+        v = self.sensor.fetch()
+        if v is None:
+            return False
+        self.buffer.append(v)
+        return True
 
     def get(self):
+        """
+        NOTE: Use the update() method output to check if the buffer has been updated.
+        Otherwise, you will get the same values.
+        """
         value = self.filter.extend(self.buffer)
         self.buffer.clear()
         return value
 
     def get_value(self):
-        return self.filter.update(self.sensor.fetch())
+        v = self.sensor.fetch()
+        if v is None:
+            return None
+        return self.filter.update(v)
 
 
 class Normalized_Sensor:
@@ -27,5 +43,8 @@ class Normalized_Sensor:
         self.normalizer = normalizer
 
     def fetch(self):
-        return self.normalizer.normalize(self.sensor.fetch())
+        v = self.sensor.fetch()
+        if v is None:
+            return None
+        return self.normalizer.normalize(v)
 

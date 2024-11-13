@@ -7,24 +7,19 @@ SKIP_BATCH = 1
 
 # Components
 
-#TODO: handle errors (None values) here
+#WARNING: Do not handle None values here. Handle this in the robot logic loop
 class US_Sensor(EV3UltrasonicSensor):
     def __init__(self, port):
         super().__init__(port)
         self.wait_ready()
 
     def fetch(self):
-        # value = super().get_value() # NEVER USE sensor.get_value()
-        value = self.get_cm()
-        if value is None:
-            raise TypeError("none caught")
-        return value
+        return self.get_cm()
 
     def __iter__(self):
         while True:
             v = self.get_cm()
             if v is None:
-                #TODO: handle differently if needed
                 continue
             yield v
 
