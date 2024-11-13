@@ -1,99 +1,111 @@
 """
 main.py
-"""
-from utils.brick import EV3UltrasonicSensor, wait_ready_sensors, reset_brick
-import time
 
-from components import ultrasonic
+DESCRIPTION: A robot that avoids wall and water
+"""
+from utils.brick import reset_brick
+import time
+import typing
 from components.gyrosensor import g_sensor
 import components.navigation as nav
-from components.navigation import wheel_left, wheel_right
 from components.ultrasonic import us_sensor
 from components.colorsensor import color_sensor
+from components.wrappers import Filtered_Sensor
+from common.filters import Median_Filter
 
-# g_sensor is the gyrosensor. Use g_sensor.fetch() to get data
+#CONSTANTS
 
-# us_sensor is the ultrasonic sensor use us_sensor.fetch() to get data
+TIMEOUT = 10
 
-# color_sensor is the color sensor use color_sensor.fetch() to get data (NOTE: I will create color_sensor.predict() eventually)
+SLOW = 90
+MODERATE = 180
+FAST = 360
 
-# nav is a file with methods defined in it (Not an object like the ones above)
-
-#if you need more sensors look at the files imported to see how each sensor was initiated
-
-sensor_claw_distance = 3
-robot_length = 10
-
-#ultra_side = EV3UltrasonicSensor(2) # port S2
-sensor_claw_distance = 3
-#sensor_side_distance = 1
-
-wait_ready_sensors()
-
-wheel_left.set_dps(0)
-wheel_right.set_dps(0)
+#apply median filter to sensor with a window of 10
+us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
+#NOTE: the other sensors are called g_sensor and color_sensor (they are already initialized)
 
 
-def get_front_distance():
-    return us_sensor.fetch()
 
-#def get_side_distance():
-#   return (ultra_side.get_value())
-
-#action can be forwards, backwards, left, right
-
-    
-def correct_direction(degrees):
-    if degrees < -10:
-        nav.turn_right()
-    if degrees > 10:
-        nav.turn_left()
-    else:
-        pass
-    
-def main():
-    new_angle = 0
-    moving_f = True
-    try:
-
-        while True:       
-            nav.activate_wheels("forwards")
-            while True:
-                d = get_front_distance()
-                print(d)
-                if d < 15:
-                    break
-                time.sleep(0.05)
-                c = color_sensor.predict()
-
-                print(c)
-                if c == 'b':
-                    nav.stop_wheels()
-                    nav.activate_wheels("right")
-                    while c == 'b':
-                        c = color_sensor.predict()
-                        print(c)
-                        if c != 'b':
-                            break
-                    nav.stop_wheels()
-                    nav.activate_wheels("forwards")
-                    
+#TIMEOUT function
+def wait_for(func):
+    if not callable(func):
+        raise TypeError("func must be a function")
+    ti = time.time()
+    v = func()
+    while v is None:
+        v = func()
+        if time.time() - ti > TIMEOUT:
+            raise TimeoutError("Sensor not responding...")
+    return v
 
 
-        
-            if get_front_distance() < 15 : # this should be changed to internally calculate how far the robot moves,
-                    print(get_front_distance())
-                    nav.stop_wheels()
-                    # TODO add detect cube color and pickup here or something
-                    
-                    while (((g_sensor.fetch() - new_angle) % 360) < 90) :
-                        nav.turn_right()
-                    new_angle = g_sensor.fetch()
-            
-            correct_direction(g_sensor.fetch())
-    finally:
-        reset_brick()
-        
-        
-if __name__ == "__main__":
-    main()
+#MAIN LOOP
+try:
+    speed = FAST
+    while True:
+        nav.forward(speed)
+        while True:
+
+            #DISTANCE
+            dist = us_sensor.fetch()
+            if dist is None:
+                nav.stop()
+                dist = wait_for(us_sensor.fetch)
+                nav.forward(speed)
+
+            if dist >= 30:
+                speed = FAST
+            else:
+                speed = MODERATE
+
+            if dist < 15:
+                break
+
+            #COLOR
+            color = color_sensor.fetch()
+            if color is None:
+                nav.stop()
+                color = wait_for(color_sensor.fetch)
+                nav.forward(speed)
+
+            if color == 'b':
+                nav.stop()
+                g_sensor.reset_measure()
+                g_sensor.wait_ready()
+                nav.turn(SLOW)
+
+                while True:
+                    angle = g_sensor.fetch()
+                    if angle is None:
+                        nav.stop()
+                        angle = wait_for(g_sensor.fetch)
+                        nav.turn(SLOW)
+                    if abs(angle) > 88:
+                        nav.stop()
+                        break
+
+        #at this point the car is near something
+        nav.stop()
+        #turn 90 degrees
+        g_sensor.reset_measure()
+        g_sensor.wait_ready()
+        nav.turn(SLOW)
+        while True:
+            dist = us_sensor.fetch()
+            if dist is None:
+                nav.stop()
+                dist = wait_for(us_sensor.fetch)
+                nav.turn(SLOW)
+
+            angle = g_sensor.fetch()
+            if angle is None:
+                nav.stop()
+                angle = wait_for(g_sensor.fetch)
+                nav.turn(SLOW)
+            if abs(angle) > 88 and dist > 40:
+                nav.stop()
+                break
+
+finally:
+    reset_brick()

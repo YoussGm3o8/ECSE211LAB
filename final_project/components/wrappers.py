@@ -29,7 +29,7 @@ class Filtered_Sensor:
         self.buffer.clear()
         return value
 
-    def get_value(self):
+    def fetch(self):
         v = self.sensor.fetch()
         if v is None:
             return None
