@@ -13,6 +13,9 @@ class US_Sensor(EV3UltrasonicSensor):
         super().__init__(port)
         self.wait_ready()
 
+    def __str__(self):
+        return f"US_Sensor(port={self.port})"
+
     def fetch(self):
         return self.get_cm()
 

@@ -35,7 +35,11 @@ def wait_for(func):
     while v is None:
         v = func()
         if time.time() - ti > TIMEOUT:
-            raise TimeoutError("Sensor not responding...")
+            if hasattr(func, '__self__'):
+                #this if for debugging purposes
+                myclass = func.__self__
+                raise TimeoutError(str(myclass)+" not responding...")
+            raise TimeoutError("Component not responding...")
     return v
 
 

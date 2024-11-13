@@ -16,6 +16,9 @@ class Color_Sensor(EV3ColorSensor):
         super().__init__(port)
         self.wait_ready()
 
+    def __str__(self):
+        return f"Color_Sensor(port={self.port})"
+
     def fetch(self):
         if self.mode != self.Mode.COMPONENT:
             self.set_mode(self.Mode.COMPONENT)

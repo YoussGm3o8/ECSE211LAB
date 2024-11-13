@@ -10,6 +10,9 @@ class GYRO_Sensor(EV3GyroSensor):
         super().__init__(port)
         self.wait_ready()
 
+    def __str__(self):
+        return f"GYRO_Sensor(port={self.port})"
+
     def fetch(self):
         return self.get_abs_measure()
 
