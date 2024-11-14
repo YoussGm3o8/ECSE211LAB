@@ -1,8 +1,15 @@
 from components.colorsensor import color_sensor
 from utils.brick import reset_brick
 from communication.client import Client
-from communication.csvwritter import to_csv
 import time
+import sys
+import os
+import csv
+
+if len(sys.argv) < 2:
+    print("missing output_file argument")
+    sys.exit(1)
+
 cl = Client()
 
 buffer = []
@@ -26,4 +33,8 @@ except Exception as e:
 finally:
     cl.exit()
     reset_brick()
-    to_csv(buffer_file)
+    path = os.path.join(os.path.dirname(__file__), sys.argv[1])
+    with open(path, 'w') as f:
+        writer = csv.writer(f)
+        writer.writerows(buffer_file)
+

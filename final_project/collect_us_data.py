@@ -15,10 +15,11 @@ from common.filters import Median_Filter
 import csv
 import sys
 import os
+import time
 
 
 SLOW = 90
-MODERATE = 180
+MODERATE = 200
 FAST = 360
 
 TIMEOUT = 10
@@ -43,20 +44,25 @@ def wait_for(func, *args):
 buffer = []
 
 try:
-    nav.turn(SLOW)
-    for i in range(1000):
+    nav.turn(MODERATE)
+    count = 0
+    ti = time.time()
+    while True:
         dist = us_sensor.fetch()
         if dist is None:
             nav.stop()
             dist = wait_for(us_sensor.fetch)
-            nav.turn(SLOW)
-        buffer.append((i, dist))
+            nav.turn(MODERATE)
+        buffer.append((count, dist))
+        count += 1
+        if time.time() - ti > 20:
+            break
     nav.stop()
     #write buffer to csv
+finally:
     path = os.path.dirname(__file__)
     path = os.path.join(path, "data", "csv")
     with open(os.path.join(path, "us_data.csv"), "w") as f:
         writer = csv.writer(f)
         writer.writerows(buffer)
-finally:
     reset_brick()

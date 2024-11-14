@@ -1,3 +1,14 @@
+"""
+Decision function: (based on priority)
+g | b | p vs o | r | y
+[if gbp]
+g vs p | b
+[if pb]
+p vs b
+[else ory]
+y vs o | r
+o vs r
+"""
 from sklearn import svm
 import numpy as np
 from color_numpy import green, blue, red, yellow, orange, purple
@@ -16,29 +27,32 @@ def get_weight(group0, group1):
     for i in clf.coef_.reshape(-1):
         w.append(float(i))
     #get the value of clf
+    #print score accuracy
+    print("accuracy: ", clf.score(np.concatenate((x1, x2)), np.concatenate((y1, y2)).reshape(-1)))
     return w, float(clf.intercept_[0])
 
 
 if __name__ == '__main__':
 
-    button1_weights = []
+    button2_weights = []
+
     decision_function = [
-            ([green, blue], [orange, red, purple, yellow]),
-            ([green], [blue]),
-            ([orange, red], [purple, yellow]),
-            ([purple], [yellow]),
-            ([orange, yellow], [red]),
-            ([yellow], [orange])
+            ([green, blue, purple], [orange, red, yellow]),
+            ([green], [purple, blue]),
+            ([purple], [blue]),
+            ([yellow], [orange, red]),
+            ([orange], [red])
             ]
 
-    for group1, group0 in decision_function:
-        weight, bias = get_weight(group1, group0)
-        button1_weights.append((weight, bias))
+    for group0, group1 in decision_function:
+        weight, bias = get_weight(group0, group1)
+        button2_weights.append((weight, bias))
 
 
     #get path of this file directory
     path = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(path, 'weights/button1_w.pkl'), 'wb') as f:
-        pickle.dump(button1_weights, f)
-        print("Weights saved in weights/button1_w.pkl")
+    output_location = os.path.join(path, "weights/button2_w.pkl")
+    with open(output_location , 'wb') as f:
+        pickle.dump(button2_weights, f)
+        print("weights saved to ", output_location)
 

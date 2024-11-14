@@ -52,33 +52,30 @@ try:
             #DISTANCE
             dist = us_sensor.fetch()
             if dist is None:
+                print("dist is None")
                 nav.stop()
                 dist = wait_for(us_sensor.fetch)
                 nav.forward(speed)
+                print("dist is not None")
 
-            if speed != FAST:
-                if dist >= 30:
-                    speed = FAST
-                    nav.forward(speed)
-            elif dist < 30: #speed must be FAST too
-                speed = MODERATE
-                nav.forward(speed)
-
-            if dist < 15:
+            if dist < 30:
                 break
 
             #COLOR
             color = color_sensor.fetch()
             if color is None:
+                print("color None")
                 nav.stop()
                 color = wait_for(color_sensor.fetch)
                 nav.forward(speed)
+                print("color not None")
 
             if color == 'b':
+                print("color is b")
                 nav.stop()
                 g_sensor.reset_measure()
-                g_sensor.wait_ready()
                 nav.turn(SLOW)
+                print(g_sensor.fetch(), "is 0")
 
                 while True:
                     angle = g_sensor.fetch()
@@ -86,6 +83,7 @@ try:
                         nav.stop()
                         angle = wait_for(g_sensor.fetch)
                         nav.turn(SLOW)
+                        print(angle)
                     if abs(angle) > 89:
                         nav.stop()
                         break
@@ -94,14 +92,15 @@ try:
         nav.stop()
         #turn 90 degrees
         g_sensor.reset_measure()
-        g_sensor.wait_ready()
         nav.turn(SLOW)
         while True:
             dist = us_sensor.fetch()
             if dist is None:
+                print("dist None")
                 nav.stop()
                 dist = wait_for(us_sensor.fetch)
                 nav.turn(SLOW)
+                print("dist not None")
 
             angle = g_sensor.fetch()
             if angle is None:
