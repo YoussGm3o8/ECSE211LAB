@@ -1,4 +1,3 @@
-from numpy import select
 from common.filters import Filter
 from common.normalization import Normalizer
 

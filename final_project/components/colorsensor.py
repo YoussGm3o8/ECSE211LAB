@@ -1,8 +1,7 @@
 from utils.brick import EV3ColorSensor
-from components.wrappers import Normalized_Sensor
+from common.wrappers import Normalized_Sensor
 from common.normalization import RGB_Normalizer
 from data.button1_svm import predict
-import time
 from deprecated import deprecated
 # Constants
 

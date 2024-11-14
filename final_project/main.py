@@ -9,7 +9,7 @@ from components.gyrosensor import g_sensor
 import components.navigation as nav
 from components.ultrasonic import us_sensor
 from components.colorsensor import color_sensor
-from components.wrappers import Filtered_Sensor
+from common.wrappers import Filtered_Sensor
 from common.filters import Median_Filter
 
 #CONSTANTS
@@ -27,13 +27,13 @@ us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
 
 
 #TIMEOUT function
-def wait_for(func):
+def wait_for(func, *args):
     if not callable(func):
         raise TypeError("func must be a function")
     ti = time.time()
-    v = func()
+    v = func(*args)
     while v is None:
-        v = func()
+        v = func(*args)
         if time.time() - ti > TIMEOUT:
             if hasattr(func, '__self__'):
                 #this if for debugging purposes
@@ -42,11 +42,10 @@ def wait_for(func):
             raise TimeoutError("Component not responding...")
     return v
 
-
 #MAIN LOOP
 try:
-    speed = FAST
     while True:
+        speed = FAST
         nav.forward(speed)
         while True:
 
@@ -57,10 +56,13 @@ try:
                 dist = wait_for(us_sensor.fetch)
                 nav.forward(speed)
 
-            if dist >= 30:
-                speed = FAST
-            else:
+            if speed != FAST:
+                if dist >= 30:
+                    speed = FAST
+                    nav.forward(speed)
+            elif dist < 30: #speed must be FAST too
                 speed = MODERATE
+                nav.forward(speed)
 
             if dist < 15:
                 break
@@ -84,7 +86,7 @@ try:
                         nav.stop()
                         angle = wait_for(g_sensor.fetch)
                         nav.turn(SLOW)
-                    if abs(angle) > 88:
+                    if abs(angle) > 89:
                         nav.stop()
                         break
 
@@ -106,7 +108,7 @@ try:
                 nav.stop()
                 angle = wait_for(g_sensor.fetch)
                 nav.turn(SLOW)
-            if abs(angle) > 88 and dist > 40:
+            if abs(angle) > 89 and dist > 40:
                 nav.stop()
                 break
 

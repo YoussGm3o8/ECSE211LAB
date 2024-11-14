@@ -6,17 +6,16 @@ os_main = None
 if __name__ != "__main__":
     os_main = os.path.dirname(os.path.abspath(__file__))
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-else:
-    import button1_svm
 
 #open green.csv to numpy
+path = os.path.join(os.path.dirname(__file__), "csv", "color")
 
-green = np.genfromtxt('csv/green.csv', delimiter=',', skip_header=1)
-blue = np.genfromtxt('csv/blue.csv', delimiter=',', skip_header=1)
-red = np.genfromtxt('csv/red.csv', delimiter=',', skip_header=1)
-yellow = np.genfromtxt('csv/yellow.csv', delimiter=',', skip_header=1)
-orange = np.genfromtxt('csv/orange.csv', delimiter=',', skip_header=1)
-purple = np.genfromtxt('csv/purple.csv', delimiter=',', skip_header=1)
+green = np.genfromtxt(os.path.join(path, "green.csv"), delimiter=',', skip_header=1)
+blue = np.genfromtxt(os.path.join(path, "blue.csv"), delimiter=',', skip_header=1)
+red = np.genfromtxt(os.path.join(path, "red.csv"), delimiter=',', skip_header=1)
+yellow = np.genfromtxt(os.path.join(path, "yellow.csv"), delimiter=',', skip_header=1)
+orange = np.genfromtxt(os.path.join(path, "orange.csv"), delimiter=',', skip_header=1)
+purple = np.genfromtxt(os.path.join(path, "purple.csv"), delimiter=',', skip_header=1)
 
 
 def normalize(data):
@@ -33,6 +32,7 @@ orange_norm = normalize(orange)
 purple_norm = normalize(purple)
 
 if __name__ == "__main__":
+    import button1_svm
     print(purple.shape)
     #scatter plot 3d
     fig = plt.figure()

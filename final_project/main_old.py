@@ -35,7 +35,7 @@ wheel_right.set_dps(0)
 
 
 def get_front_distance():
-    return us_sensor.fetch()
+    return (ultra_front.get_value())
 
 #def get_side_distance():
 #   return (ultra_side.get_value())

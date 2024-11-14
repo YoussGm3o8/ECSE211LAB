@@ -1,6 +1,6 @@
 from components.gyrosensor import g_sensor
 from components.ultrasonic import us_sensor
-from components.wrappers import Filtered_Sensor
+from common.wrappers import Filtered_Sensor
 from common.filters import Median_Filter, Mean_Filter
 import time
 from utils.brick import reset_brick
