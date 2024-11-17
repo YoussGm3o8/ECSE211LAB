@@ -63,9 +63,6 @@ if __name__ == "__main__":
     orange_correct = 0
     purple_correct = 0
     for pixel in green:
-        for i in ['g', 'p', 'b']:
-            if predict(pixel) == i:
-                print("right grooping")
         if predict(pixel) == 'g':
             green_correct += 1
     for pixel in blue:
@@ -90,7 +87,38 @@ if __name__ == "__main__":
     print("Yellow: ", yellow_correct/yellow.shape[0])
     print("Orange: ", orange_correct/orange.shape[0])
     print("Purple: ", purple_correct/purple.shape[0])
-
+    import svm
+    # now do the same using svm.clf
+    green_correct = 0
+    blue_correct = 0
+    red_correct = 0
+    yellow_correct = 0
+    orange_correct = 0
+    purple_correct = 0
+    for pixel in green:
+        if svm.clf.predict([pixel])[0] == 0:
+            green_correct += 1
+    for pixel in blue:
+        if svm.clf.predict([pixel])[0] == 1:
+            blue_correct += 1
+    for pixel in red:
+        if svm.clf.predict([pixel])[0] == 2:
+            red_correct += 1
+    for pixel in yellow:
+        if svm.clf.predict([pixel])[0] == 3:
+            yellow_correct += 1
+    for pixel in orange:
+        if svm.clf.predict([pixel])[0] == 4:
+            orange_correct += 1
+    for pixel in purple:
+        if svm.clf.predict([pixel])[0] == 5:
+            purple_correct += 1
+    print("Green: ", green_correct/green.shape[0])
+    print("Blue: ", blue_correct/blue.shape[0])
+    print("Red: ", red_correct/red.shape[0])
+    print("Yellow: ", yellow_correct/yellow.shape[0])
+    print("Orange: ", orange_correct/orange.shape[0])
+    print("Purple: ", purple_correct/purple.shape[0])
 
 
 else:
