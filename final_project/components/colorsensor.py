@@ -2,7 +2,7 @@ from utils.brick import EV3ColorSensor
 from common.wrappers import Normalized_Sensor
 from common.normalization import RGB_Normalizer
 from data.button1_svm import predict
-from deprecated import deprecated
+#from deprecated import deprecated
 # Constants
 
 COLOR_SENSOR_PORT = 2
@@ -27,7 +27,7 @@ class Color_Sensor(EV3ColorSensor):
             return None
         return predict(val[:-1])
 
-    @deprecated(reason="This function is unsafe because it hides None values from caller. Use fetch instead.")
+    #@deprecated(reason="This function is unsafe because it hides None values from caller. Use fetch instead.")
     def predict(self, value=None):
         if value is not None:
             return predict(value)

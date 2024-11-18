@@ -4,7 +4,7 @@ import time
 # Constants
 
 WHEEL_ACTION = {"backwards" : [180, 180], "forwards" : [-180, -180],
-                "right" : [-90, 90], "left" : [180, -180]}
+                "right" : [-90, 90], "left" : [90, -90]}
 
 LEFT_WHEEL_PORT = "D"
 RIGHT_WHEEL_PORT = "B"
@@ -15,6 +15,8 @@ WHEEL_TO_CAR_DEGREE_RATIO = 1.9722
 
 wheel_left = Motor(LEFT_WHEEL_PORT)
 wheel_right = Motor(RIGHT_WHEEL_PORT)
+
+arm = Motor("C")
 
 # functions
 
@@ -59,4 +61,11 @@ def turn(dps):
     """
     wheel_left.set_dps(dps)
     wheel_right.set_dps(-dps)
+
+def move_arm(degrees):
+    arm.reset_position()
+    arm.set_limits(0,180)
+    arm.set_position_relative(degrees)
+
+
 
