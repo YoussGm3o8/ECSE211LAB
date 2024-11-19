@@ -5,7 +5,8 @@ from data.button1_svm import predict
 import data.button2_svm as button2_svm
 # Constants
 
-COLOR_SENSOR_PORT = 2
+COLOR_SENSOR_PORT = 3
+COLOR_SENSOR_PORT2 = 2
 
 # Components
 
@@ -62,3 +63,4 @@ class Color_Sensor2(Color_Sensor):
 
 
 color_sensor = Color_Sensor(COLOR_SENSOR_PORT) 
+color_sensor2 = Color_Sensor2(COLOR_SENSOR_PORT) 
