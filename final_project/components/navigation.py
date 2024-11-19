@@ -71,3 +71,11 @@ def set_limits(dps):
     wheel_left.set_limits(0, dps)
     wheel_right.set_limits(0, dps)
 
+
+def scan():
+    pass
+
+
+
+
+
