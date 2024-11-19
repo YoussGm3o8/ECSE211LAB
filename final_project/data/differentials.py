@@ -6,7 +6,7 @@ from collections import deque
 import statistics as stat
 
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv", "us_data_empty.csv")
+path = os.path.join(path, "csv", "us_data4.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
@@ -41,24 +41,38 @@ class Median_Filter(Filter):
         super().__init__(lambda x : stat.median(x), buffer_length)
 
 class EMA_Derivatives:
-    def __init__(self, initial, alpha=0.1, bias=0):
+    def __init__(self, initial, alpha=0.1):
         assert(len(initial) == 2)
         self.alpha = alpha
         self.prev = initial
-        self.value = bias
+        self.value = None
+
+    def reset(self, initial):
+        self.prev = initial
+        self.value = None
 
     def update(self, current):
         delta_x = current[0] - self.prev[0]
-        if abs(delta_x) < 1e-5:
-            delta_x = 1e-5
-        val = (current[1] - self.prev[1]) / (current[0] - self.prev[0])
-        self.value = self.alpha * val + (1 - self.alpha) * self.value
+        delta_y = current[1] - self.prev[1]
+        #clamp delta_x
+        if delta_x < 0.001 and delta_x >= 0:
+            delta_x = 0.001
+        elif delta_x > -0.001 and delta_x < 0:
+            delta_x = -0.001
+
+        val = delta_y / delta_x
+
+        if self.value is None:
+            self.value = val
+        else:
+            self.value = self.alpha * val + (1 - self.alpha) * self.value
+
         self.prev = current
         return self.value
 
 
-
 dd = []
+print(data.shape)
 ema = EMA_Derivatives(data[0], alpha=0.55)
 med = Median_Filter(10)
 med2 = Median_Filter(2)

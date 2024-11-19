@@ -111,6 +111,7 @@ def rotate(speed, stop_angle):
 
 
 def scan():
+    #NOTE: add time.sleep() or use threads
     buffer = []
     angle = poll(g_sensor.fetch)
     turn(90)
