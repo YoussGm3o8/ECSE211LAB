@@ -6,7 +6,7 @@ import time
 WHEEL_ACTION = {"backwards" : [180, 180], "forwards" : [-180, -180],
                 "right" : [-90, 90], "left" : [90, -90]}
 
-LEFT_WHEEL_PORT = "D"
+LEFT_WHEEL_PORT = "C"
 RIGHT_WHEEL_PORT = "B"
 
 WHEEL_TO_CAR_DEGREE_RATIO = 1.9722
@@ -16,13 +16,13 @@ WHEEL_TO_CAR_DEGREE_RATIO = 1.9722
 wheel_left = Motor(LEFT_WHEEL_PORT)
 wheel_right = Motor(RIGHT_WHEEL_PORT)
 
-arm = Motor("C")
+arm = Motor("A")
 
 # functions
 
 def activate_wheels(action):
-    wheel_left.set_dps(2 * WHEEL_ACTION.get(action)[0]);
-    wheel_right.set_dps(2 * WHEEL_ACTION.get(action)[1]);
+    wheel_left.set_dps(2 * WHEEL_ACTION.get(action)[0])
+    wheel_right.set_dps(2 * WHEEL_ACTION.get(action)[1])
 
 def stop_wheels():
     wheel_left.set_dps(0)
@@ -66,6 +66,16 @@ def move_arm(degrees):
     arm.reset_position()
     arm.set_limits(0,180)
     arm.set_position_relative(degrees)
+
+def set_limits(dps):
+    wheel_left.set_limits(0, dps)
+    wheel_right.set_limits(0, dps)
+
+
+def scan():
+    pass
+
+
 
 
 

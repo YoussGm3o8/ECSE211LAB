@@ -23,7 +23,7 @@ MODERATE = 200
 FAST = 360
 
 TIMEOUT = 10
-
+GYRO_CALIBRATE = 0.999
 #TIMEOUT function
 def wait_for(func, *args):
     if not callable(func):
@@ -44,16 +44,23 @@ def wait_for(func, *args):
 buffer = []
 
 try:
+    if len(sys.argv) != 2:
+        exit()
+    print(sys.argv[1])
     nav.turn(MODERATE)
     count = 0
     ti = time.time()
     while True:
+        time.sleep(0.05)
         dist = us_sensor.fetch()
+
         if dist is None:
             nav.stop()
             dist = wait_for(us_sensor.fetch)
             nav.turn(MODERATE)
-        buffer.append((count, dist))
+        angle = g_sensor.fetch()
+        if angle is not None:
+            buffer.append((angle*0.999, dist))
         count += 1
         if time.time() - ti > 20:
             break
@@ -62,7 +69,7 @@ try:
 finally:
     path = os.path.dirname(__file__)
     path = os.path.join(path, "data", "csv")
-    with open(os.path.join(path, "us_data.csv"), "w") as f:
+    with open(os.path.join(path, sys.argv[1]), "w") as f:
         writer = csv.writer(f)
         writer.writerows(buffer)
     reset_brick()

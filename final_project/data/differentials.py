@@ -6,7 +6,7 @@ from collections import deque
 import statistics as stat
 
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv","simulated", "us_data.csv")
+path = os.path.join(path, "csv", "us_data_empty.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
@@ -61,7 +61,7 @@ class EMA_Derivatives:
 dd = []
 ema = EMA_Derivatives(data[0], alpha=0.55)
 med = Median_Filter(10)
-med2 = Median_Filter(15)
+med2 = Median_Filter(2)
 # median_data = [med.update(j[1] - i[1] / (j[0] - i[0])) for i, j in zip(data[:-1], data[1:])]
 # plt.plot(data[1:, 0], median_data) 
 
