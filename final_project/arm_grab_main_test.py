@@ -55,7 +55,7 @@ def find_cube():
             return False
         
         print(current_dist)
-        if (current_dist > 15):
+        if ((current_dist - us_sensor.fetch()) > 4 or (current_dist - us_sensor.fetch()) <= 0):
             nav.turn(SLOW)
             current_dist = us_sensor.fetch()
             time.sleep(0.1) 
@@ -72,6 +72,7 @@ def find_cube():
 #Arm Grab Cube function
 
 def grab_cube():
+    nav.dump_start()
     nb_of_tries = 0
     while nb_of_tries < 2:
         find_cube()
@@ -80,10 +81,10 @@ def grab_cube():
         nav.turn(SLOW)
         time.sleep(0.4)
         nav.stop()
-        nav.move_arm(-160)
-        time.sleep(1)
+        #nav.move_arm(-160)
+        #time.sleep(1)
         nav.forward(SLOW)
-        time.sleep(0.6)
+        time.sleep(1.4)
         nav.stop()
         
         color = None
@@ -94,11 +95,11 @@ def grab_cube():
 
         nav.stop()
         nav.forward(-SLOW)
-        time.sleep(0.6)
+        time.sleep(1.4)
         nav.stop()
         
-        nav.move_arm(160)
-        time.sleep(1)
+        #nav.move_arm(160)
+        #time.sleep(1)
         nav.turn(-SLOW)
         time.sleep(0.4)
         nav.stop()
@@ -118,9 +119,9 @@ def grab_cube():
                 nav.stop()
                 
                 
-                nav.move_arm(-210)
+                nav.move_arm(-220)
                 time.sleep(0.7)
-                nav.move_arm(210)
+                nav.move_arm(220)
                 #move back here
                 nav.forward(-SLOW)
                 time.sleep(1.8)
@@ -128,7 +129,9 @@ def grab_cube():
                 
                 #time.sleep(1)
                 nav.move_arm(90)
+                time.sleep(0.2)
                 nb_of_tries = 0
+                nav.dump_dump()
                 return True
                 
             else:
