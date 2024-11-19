@@ -22,7 +22,8 @@ FAST = 360
 
 #apply median filter to sensor with a window of 10
 us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
-color_sensor2 = colorsensor.Color_Sensor2(2)
+color_sensor_left = colorsensor.Color_Sensor2(2)
+color_sensor_right = colorsensor.Color_Sensor(3)
 #NOTE: the other sensors are called g_sensor and color_sensor (they are already initialized)
 
 
@@ -90,7 +91,7 @@ def grab_cube():
         color = None
         
         while (color == 'p' or color == None):
-            color = color_sensor2.fetch()
+            color = color_sensor_left.fetch()
             print(color)
 
         nav.stop()
@@ -111,7 +112,7 @@ def grab_cube():
             if color == 'o' or color == 'y':
                 #Grab Cube
                 
-                nav.move_arm(-90)
+                nav.move_arm(-70)
                 time.sleep(2)
                 #move forward here
                 nav.forward(SLOW)
@@ -119,26 +120,26 @@ def grab_cube():
                 nav.stop()
                 
                 
-                nav.move_arm(-220)
+                nav.move_arm(-240)
                 time.sleep(0.7)
-                nav.move_arm(220)
+                nav.move_arm(240)
                 #move back here
                 nav.forward(-SLOW)
                 time.sleep(1.8)
                 nav.stop()
                 
                 #time.sleep(1)
-                nav.move_arm(90)
+                nav.move_arm(70)
                 time.sleep(0.2)
                 nb_of_tries = 0
                 nav.dump_dump()
                 return True
                 
             else:
-                #nav.turn(SLOW)
-                #time.sleep(0.5)
-                #nav.stop()
-                #color = color_sensor2.fetch()
+                nav.turn(SLOW)
+                time.sleep(0.5)
+                nav.stop()
+                color = color_sensor_left.fetch()
                 if (color != 'o' or color != 'y') and nb_of_tries < 1:
                     nav.turn(-MODERATE)
                     time.sleep(0.2)
@@ -150,8 +151,32 @@ def grab_cube():
                     time.sleep(1)
                     nav.stop()
                     return False
-    
-#MAIN LOOP
+
+def avoid_water():
+    nav.forward(MODERATE)
+    try:
+        while True:
+            if color_sensor_left.fetch() == "b" or color_sensor_left.fetch() == "p":
+                nav.forward(-SLOW)
+                time.sleep(0.1)
+                nav.turn(SLOW)
+                time.sleep(0.05)
+                print("right")
+                print(color_sensor_left.fetch())
+            elif color_sensor_right.fetch() == "b" or color_sensor_right.fetch() == "p":
+                nav.forward(-SLOW)
+                time.sleep(0.1)
+                nav.turn(-SLOW)
+                time.sleep(0.05)
+                print("left")
+                print(color_sensor_right.fetch())
+            else:
+                nav.forward(MODERATE)
+                time.sleep(0.05)
+    finally:
+        reset_brick()
+            
+# #MAIN LOOP
 # try:
 #     while True:
 #         speed = FAST
@@ -162,6 +187,7 @@ def grab_cube():
 #             dist = us_sensor.fetch()
 #             print(dist)
 #             if dist is None:
+#                 print("dist is none")
 #                 nav.stop()
 #                 dist = wait_for(us_sensor.fetch)
 #                 nav.forward(speed)
@@ -174,48 +200,22 @@ def grab_cube():
 #                 speed = MODERATE
 #                 nav.forward(speed)
 # 
-#             if dist < 15:
-#                 dist = us_sensor.fetch()
-#                 background_distance = 255
-#                 object_distance = dist
-#                 nav.stop()
-#                 nav.turn(-SLOW)
-#                 time.sleep(0.5)
-#                 nav.stop()
-#                 nav.turn(SLOW)
-#                 while background_distance > (object_distance + 5):
-#                     background_distance = us_sensor.fetch()
-#                     #print(background_distance - object_distance)
-#                 nav.turn(SLOW)
-#                 time.sleep(0.2)
+#             if dist < 20:          
 #                 
-#                 nav.forward(-SLOW)
-#                 time.sleep(0.5)
-#                 
-#                 while us_sensor.fetch() < 10:
-#                     nav.forward(-SLOW)
-#                     time.sleep(0.05)
-#                     print(us_sensor.fetch())
-#                 while us_sensor.fetch() > 10:
-#                     nav.forward(SLOW)
-#                     time.sleep(0.05)
-#                     print(us_sensor.fetch())
-#                 nav.stop()
-#                 
-#                 if grab_cube():
-#                     break
-#                 else:
-#                     nav.turn(SLOW)
-#                     time.sleep(2)
+#                # if grab_cube():
+#                 #    break
+#                 #else:
+#                     nav.turn(MODERATE)
+#                     time.sleep(0.5)
 #                     nav.stop()
 #                     dist = us_sensor.fetch()
-                
-
-            #COLOR
-#             color = color_sensor.fetch()
+#                 
+# 
+#             #COLOR
+#             color = color_sensor_left.fetch()
 #             if color is None:
 #                 nav.stop()
-#                 color = wait_for(color_sensor.fetch)
+#                 color = wait_for(color_sensor_left.fetch)
 #                 nav.forward(speed)
 # 
 #             if color == 'b':
@@ -226,13 +226,15 @@ def grab_cube():
 # 
 #                 while True:
 #                     angle = g_sensor.fetch()
+#                     print("angle ", angle)
 #                     if angle is None:
+#                         print("angle is none")
 #                         nav.stop()
 #                         angle = wait_for(g_sensor.fetch)
 #                         nav.turn(SLOW)
 #                     if abs(angle) > 89:
-#                         nav.stop()
-#                         break
+#                        nav.stop()
+#                        break
 # 
 #         #at this point the car is near something
 #         nav.stop()
@@ -243,18 +245,21 @@ def grab_cube():
 #         while True:
 #             dist = us_sensor.fetch()
 #             if dist is None:
+#                 print("dist is none")
 #                 nav.stop()
 #                 dist = wait_for(us_sensor.fetch)
 #                 nav.turn(SLOW)
 # 
 #             angle = g_sensor.fetch()
 #             if angle is None:
+#                 print("angle is none")
 #                 nav.stop()
 #                 angle = wait_for(g_sensor.fetch)
 #                 nav.turn(SLOW)
-#             if abs(angle) > 89 and dist > 40:
-#                 nav.stop()
-#                 break
-
-#finally:
+#             break
+#             #if abs(angle) > 89 and dist > 40:
+#              #   nav.stop()
+#               #  break
+# 
+# finally:
 #   reset_brick()
