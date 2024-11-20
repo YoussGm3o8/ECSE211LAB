@@ -6,7 +6,7 @@ from collections import deque
 import statistics as stat
 
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv", "us_data4.csv")
+path = os.path.join(path, "csv", "us_data3.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
@@ -85,62 +85,58 @@ class EMA:
             self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
 
-treshold = 10
-dd = []
-aa = []
+
+def wavelet(x, h, w):
+    """
+        the full width of the wavelet is 3*w
+    """
+
+    if x >= h:
+        if x < h + w:
+            return -10 / w
+        elif x < h + 2*w:
+            return 30 / w
+        elif x <= h + 3*w:
+            return -10 / w
+    return 0
+
+def process_wavelets(data, width):
+    tot = 0
+    for d in data:
+        tot += wavelet(d[0], data[0][0], width) * d[1]
+    data = np.array(data)
+    # plt.plot(data[:, 0], [wavelet(d[0], data[0][0], width) for d in data])
+    # plt.plot(data[:, 0], [d[1] for d in data])
+    # plt.scatter(data[0, 0], tot, c="blue")
+    # plt.pause(0.05)
+    # plt.draw()
+    # plt.clf()
+    return tot
+
+class Wavelet_Filter(Filter):
+    def __init__(self, buffer_len, width):
+        super().__init__(lambda x : process_wavelets(x, width), buffer_len)
+
+wa = Wavelet_Filter(20, 30)
+
 print(data.shape)
-avg = EMA(alpha=0.05)
-avg.reset(np.mean(data[:10,1]))
-ema = EMA_Derivatives(data[0], alpha=0.55)
-med = Median_Filter(10)
-med2 = Median_Filter(2)
-# median_data = [med.update(j[1] - i[1] / (j[0] - i[0])) for i, j in zip(data[:-1], data[1:])]
-# plt.plot(data[1:, 0], median_data) 
+mean = np.mean(data)
+avg = EMA(alpha=0.1)
+med = Median_Filter(15)
+dema = EMA_Derivatives(data[0], alpha=0.55)
+# data_processed = np.array([d[1] - avg.update(d[1]) for d in data])
+data_processed = np.array([med.update(d[1]) for d in data])
 
-data = np.array([(i[0], med.update(i[1])) for i in data])
-data = data[1:]
-
+dd = []
 for i in data:
-    dd.append(ema.update(i))
+    dd.append(dema.update(i))
 
-for i in data:
-    aa.append(avg.update(i[1]))
+data = np.array(data)
+wavelet_graph = np.array([(i[0], wa.update(i)) for i in zip(data[:,0], data_processed)])
 
-mean = np.mean(data[:, 1])
-
-plt.plot(data[:, 0], dd, alpha=0.5)
-#draw y lines where dd if within 0.1 of 0
-# signal_detected = np.where(np.abs(dd) < 0.01, 1, 0)
-last_detected = False
-signals_detected = []
-
-for i, j, coor, bound in zip(dd[:-1], dd[1:], data[:-1], aa[:-1]):
-    #if two adjacent values have different signs, then there is a signal
-    if i * j < 0:
-        if not last_detected:
-            signals_detected.append(coor)
-            if coor[1] < bound - treshold:
-                plt.axvline(x=coor[0], color='purple')
-            else:
-                plt.axvline(x=coor[0], color='orange')
-            last_detected = True
-    #also if the value if within 0.1 of 0
-    elif abs(i) < 0.01:
-        if not last_detected:
-            signals_detected.append(coor)
-            if coor[1] < (bound - treshold):
-                plt.axvline(x=coor[0], color='purple')
-            else:
-                plt.axvline(x=coor[0], color='orange')
-            last_detected = True
-    else:
-        last_detected = False
-
-# plt.plot(data[:, 0], signal_detected, c='g')
-print(mean)
-plt.plot(data[:, 0], data[:, 1] - mean, alpha=1, c='r')
-plt.plot(data[:, 0], np.array(aa) - mean, alpha=1, c='black')
-plt.plot(data[:, 0], np.array(aa) - mean - treshold, alpha=1, c='pink')
-#show x axis on 0
-plt.axhline(y=0, color='k')
+plt.plot(data[:, 0], wavelet_graph[:, 1], c='g')
+plt.plot(data[:, 0], data_processed)
+#plot 0 axis
+plt.axhline(0, color='black', lw=1)
 plt.show()
+

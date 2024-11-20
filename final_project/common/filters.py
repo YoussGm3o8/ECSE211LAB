@@ -36,3 +36,49 @@ class Median_Filter(Filter):
 class Mean_Filter(Filter):
     def __init__(self, buffer_length):
         super().__init__(lambda x : stat.mean(x), buffer_length)
+
+class EMA_Derivatives:
+    def __init__(self, initial, alpha=0.1):
+        assert(len(initial) == 2)
+        self.alpha = alpha
+        self.prev = initial
+        self.value = None
+
+    def reset(self, initial):
+        self.prev = initial
+        self.value = None
+
+    def update(self, current):
+        delta_x = current[0] - self.prev[0]
+        delta_y = current[1] - self.prev[1]
+        #clamp delta_x
+        if delta_x < 0.001 and delta_x >= 0:
+            delta_x = 0.001
+        elif delta_x > -0.001 and delta_x < 0:
+            delta_x = -0.001
+
+        val = delta_y / delta_x
+
+        if self.value is None:
+            self.value = val
+        else:
+            self.value = self.alpha * val + (1 - self.alpha) * self.value
+
+        self.prev = current
+        return self.value
+
+class EMA:
+    def __init__(self, alpha=0.1):
+        self.alpha = alpha
+        self.value = None
+
+    def reset(self, initial=None):
+        self.value = initial
+
+    def update(self, value):
+        if self.value is None:
+            self.value = value
+        else:
+            self.value = self.alpha * value + (1 - self.alpha) * self.value
+        return self.value
+

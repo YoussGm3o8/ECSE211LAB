@@ -6,7 +6,7 @@ from collections import deque
 import statistics as stat
 
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv", "us_data4.csv")
+path = os.path.join(path, "csv", "us_data3.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
@@ -84,63 +84,60 @@ class EMA:
         else:
             self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
-
-treshold = 10
-dd = []
-aa = []
+treshold = 40
 print(data.shape)
-avg = EMA(alpha=0.05)
-avg.reset(np.mean(data[:10,1]))
-ema = EMA_Derivatives(data[0], alpha=0.55)
-med = Median_Filter(10)
-med2 = Median_Filter(2)
+avg = EMA(alpha=0.1)
+ema = EMA_Derivatives(data[0], alpha=0.7)
+med = Median_Filter(2)
 # median_data = [med.update(j[1] - i[1] / (j[0] - i[0])) for i, j in zip(data[:-1], data[1:])]
 # plt.plot(data[1:, 0], median_data) 
 
-data = np.array([(i[0], med.update(i[1])) for i in data])
-data = data[1:]
+#process data
+med_buf2 = []
+med_buf = []
+avg_buf = []
+avg.reset(np.mean(data[:30,1]))
+for x, y in data:
+    y_m = med.update(y)
+    y_a = avg.update(y)
+    med_buf2.append((x, y_m))
+    if y_m <= y_a:
+        med_buf.append((x, y_m))
+    else:
+        med_buf.append((x, y_a))
 
-for i in data:
-    dd.append(ema.update(i))
+    avg_buf.append((x, y_a))
+dd = []
 
-for i in data:
-    aa.append(avg.update(i[1]))
+for i in med_buf:
+    deriv = ema.update(i)
+    dd.append(deriv)
+
+def detection():
+    signal_detected = 0
+    down_signal = 0
+    for i, j, d in zip(dd[:-1], dd[1:], data[1:]):
+        if j < -0.3:
+            down_signal = d[0]
+
+        elif j > 0.3:
+            if signal_detected > down_signal and signal_detected - down_signal < treshold:
+                plt.axvline(x=signal_detected, color='r')
+                signal_detected = 0
+
+        if i * j < 0 and i < j:
+            signal_detected = d[0]
+
+detection()
+med_buf = np.array(med_buf)
+med_buf2 = np.array(med_buf2)
 
 mean = np.mean(data[:, 1])
-
-plt.plot(data[:, 0], dd, alpha=0.5)
-#draw y lines where dd if within 0.1 of 0
-# signal_detected = np.where(np.abs(dd) < 0.01, 1, 0)
-last_detected = False
-signals_detected = []
-
-for i, j, coor, bound in zip(dd[:-1], dd[1:], data[:-1], aa[:-1]):
-    #if two adjacent values have different signs, then there is a signal
-    if i * j < 0:
-        if not last_detected:
-            signals_detected.append(coor)
-            if coor[1] < bound - treshold:
-                plt.axvline(x=coor[0], color='purple')
-            else:
-                plt.axvline(x=coor[0], color='orange')
-            last_detected = True
-    #also if the value if within 0.1 of 0
-    elif abs(i) < 0.01:
-        if not last_detected:
-            signals_detected.append(coor)
-            if coor[1] < (bound - treshold):
-                plt.axvline(x=coor[0], color='purple')
-            else:
-                plt.axvline(x=coor[0], color='orange')
-            last_detected = True
-    else:
-        last_detected = False
-
-# plt.plot(data[:, 0], signal_detected, c='g')
 print(mean)
-plt.plot(data[:, 0], data[:, 1] - mean, alpha=1, c='r')
-plt.plot(data[:, 0], np.array(aa) - mean, alpha=1, c='black')
-plt.plot(data[:, 0], np.array(aa) - mean - treshold, alpha=1, c='pink')
-#show x axis on 0
+avg_buf = np.array(avg_buf)
+plt.plot(avg_buf[:, 0], avg_buf[:, 1]-mean, alpha=1, c='b')
+plt.plot(med_buf[:, 0], med_buf[:, 1]-mean, alpha=1, c='r')
+plt.plot(med_buf[:, 0], np.array(dd), alpha=1, c='g')
+plt.plot(med_buf2[:, 0], med_buf2[:, 1]-mean, alpha=1, c='y')
 plt.axhline(y=0, color='k')
 plt.show()

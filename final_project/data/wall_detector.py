@@ -6,7 +6,7 @@ from collections import deque
 import statistics as stat
 
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv","simulated", "us_data.csv")
+path = os.path.join(path, "csv", "us_data4.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
@@ -60,13 +60,12 @@ class EMA_Derivatives:
         self.prev = current
         return self.value
 
-
 med1 = Max_Filter(55)
 med2 = Min_Filter(30)
 
 data_med1 = np.array([(i[0], med1.update(i[1])) for i in data])
 data_med2 = np.array([(i[0], med2.update(i[1])) for i in data])
-
+#add axis to mean
 plt.plot(data[:, 0], data[:, 1], c='g')
 plt.plot(data_med2[:, 0], data_med2[:, 1], c='r')
 plt.plot(data_med1[:, 0], data_med1[:, 1], c='b')

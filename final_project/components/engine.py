@@ -16,6 +16,9 @@ Usage:
     us_sensor is a float of the distance in cm
 
     g_sensor is a float of the angle in degrees from start of the program (it can be above 360 or below 0 e.g. 370 or -1012)
+
+
+NOTES: make sure that the main loop is faster than the polling rate of sensor (the queue blocks when full)
 """
 
 import time
@@ -25,36 +28,42 @@ from components.colorsensor import color_sensor, color_sensor2
 from common.wrappers import Filtered_Sensor
 from common.filters import Median_Filter
 from common import threads
+from queue import Queue
+from collections import namedtuple
+from utils.brick import reset_brick
 
-global_state = {"us_sensor":None, "color_sensor": None, "color_sensor2": None, "g_sensor": None}
+#state is a named tuple that stores the current state of the sensors
+#example usage 1: state.us_sensor -> gives the value of the us_sensor
+#example usage 2: state.color_sensor -> gives the value of the color_sensor
+state = namedtuple("state", ["us_sensor", "color_sensor", "color_sensor2", "g_sensor"])
+
+global_state = Queue(maxsize=2)
 global_enable = [True]*4 #enable/disable sensors in the order of above initialization
 
 us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
-
 th_engine = threads.ThreadEngine()
+
+def get_state(enables = global_enable):
+        return state(
+        us_sensor.fetch() if enables[0] else "Disabled",
+        color_sensor.fetch() if enables[1] else "Disabled",
+        color_sensor2.fetch() if enables[2] else "Disabled",
+        g_sensor.fetch() if enables[3] else "Disabled")
 
 def poll_sensors():
     """
         for idx look at common/logging.py
     """
-
-    if global_enable[0]:
-        global_state["us_sensor"] = us_sensor.fetch()
-
-    if global_enable[1]:
-        global_state["color_sensor"] = color_sensor.fetch()
-
-    if global_enable[2]:
-        global_state["color_sensor2"] = color_sensor2.fetch()
-
-    if global_enable[3]:
-        global_state["g_sensor"] = g_sensor.fetch()
-
+    global_state.put(get_state())
     time.sleep(0.05)
+
+
+
 
 def start():
     th_engine.loop(poll_sensors)
 
 def end():
     th_engine.join_all()
+    reset_brick()
 
