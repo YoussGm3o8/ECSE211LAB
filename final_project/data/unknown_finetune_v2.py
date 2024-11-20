@@ -1,6 +1,6 @@
 import numpy as np
 from color_numpy import green, blue, red, yellow, orange, purple
-from button2_svm import predict
+from button1_svm import predict
 
 # Concatenate the dataset and initialize target values
 dataset = np.concatenate((green, blue, red, yellow, orange, purple), axis=0)
@@ -30,23 +30,26 @@ def compute_type1(predictions, target):
     return type1_error + 0.05 * unknowns
 
 # Function to compute the decision plane
-def compute_plane(x, weights, bias):
-    return np.dot(x, weights) + bias
+def is_unknown(pixel, treshold):
+    s = np.sum(pixel)
+    s = np.max((s, 0.0001))
+    pixel = pixel / s
+    ent = -np.sum(pixel * np.log(pixel))
+    # print(ent)
+    return True if ent < treshold else False
+
 
 # Evaluate random planes and minimize Type 1 error
 best_score = float('inf')
-best_weights = None
-best_bias = None
+best_treshold = 0
 
 # Generate random search or optimization
 for iteration in range(1000):  # Limit number of iterations for efficiency
     # Randomly initialize weights and bias
-    weights = np.random.random_integers(0, 1000, 3)
-    weights  = (weights - 500) / 250  # Random weights between -2 and 2
-    bias = np.random.random_integers(0, 1000) / 100 - 5  # Random bias between -5 and 5
-    
+    treshold = iteration / 500
+
     # Classify the data based on the decision plane
-    predictions = [predict(d) if compute_plane(d, weights, bias) > 0 else 'unknown' for d in dataset]
+    predictions = [predict(d) if not is_unknown(d, treshold) else 'unknown' for d in dataset]
     
     # Compute the Type 1 error for this configuration
     score = compute_type1(predictions, target)
@@ -54,14 +57,12 @@ for iteration in range(1000):  # Limit number of iterations for efficiency
     # Keep track of the best configuration
     if score < best_score:
         best_score = score
-        best_weights = weights
-        best_bias = bias
+        best_treshold = treshold
         print(f"New best score: {best_score:.4f}")
-        print(f"Weights: {best_weights}, Bias: {best_bias}")
+        print(f"New best treshold: {best_treshold:.4f}")
 
-print(f"Final best configuration - Weights: {best_weights}, Bias: {best_bias}")
+print(f"Final best configuration - Treshold: {best_treshold}")
 print(f"Final best score: {best_score:.4f}")
-
 
 # plot a scatter graph of the data with unknown as its own color
 import matplotlib.pyplot as plt
@@ -71,10 +72,10 @@ import matplotlib.pyplot as plt
 #overwrite target with unknown
 new_target = []
 for d in dataset:
-    if compute_plane(d, best_weights, best_bias) > 0:
-        new_target.append(predict(d))
-    else:
+    if is_unknown(d, best_treshold):
         new_target.append('unknown')
+    else:
+        new_target.append(predict(d))
 
 #plot
 fig = plt.figure()

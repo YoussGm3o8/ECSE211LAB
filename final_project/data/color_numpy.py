@@ -33,6 +33,7 @@ purple_norm = normalize(purple)
 
 if __name__ == "__main__":
     from button2_svm import predict
+
     print(purple.shape)
     #scatter plot 3d
     fig = plt.figure()
