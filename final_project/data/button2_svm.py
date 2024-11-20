@@ -25,9 +25,16 @@ def project(pixel, weight, bias):
             ([orange], [red])
             ]
 """
+unknown_plane = [0.212, 0.668, 0.156]
+unknown_bias = -4.91
 
 
 def predict(pixel):
+
+    #comment this part if you don't want unknowns
+    if project(pixel, unknown_plane, unknown_bias):
+        return 'unknown'
+
     if not project(pixel, weights[0][0], weights[0][1]):
         #green blue or purple
         if not project(pixel, weights[1][0], weights[1][1]):

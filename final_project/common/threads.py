@@ -1,6 +1,6 @@
 import threading
 
-RUNNING_THREADS = []
+running_threads = []
 
 class ThreadEngine:
     def __init__(self):
@@ -9,23 +9,23 @@ class ThreadEngine:
     def loop(self, func, *args):
         assert(callable(func))
         id = len(self.threads)
-        RUNNING_THREADS.append(True)
+        running_threads.append(True)
         self.threads.append(threading.Thread(target=self.start, args=(func, id, *args)))
         self.threads[id].start()
         return id
 
     @staticmethod
     def start(func, id, *args):
-        while RUNNING_THREADS[id]:
+        while running_threads[id]:
             func(*args)
 
     def join(self, id):
-        RUNNING_THREADS[id] = False
+        running_threads[id] = False
         self.threads[id].join()
 
     def join_all(self):
-        for i in range(len(RUNNING_THREADS)):
-            RUNNING_THREADS[i] = False
+        for i in range(len(running_threads)):
+            running_threads[i] = False
         for t in self.threads:
             t.join()
 

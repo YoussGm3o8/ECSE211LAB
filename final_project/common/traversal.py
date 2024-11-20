@@ -13,10 +13,8 @@ color = p, o, y, g, r, b, UNKNOWN, NONE
 void go_to_position (int final_position): A function that goes to final_position that goes in a
 straight line, while avoiding water, obstacles and collecting poop. 
 """
-global_state = [None, None, None, None]
 map_len = 122
-
-global_flags = deque(maxlen=10) #we will use this queue for flags/errors
+#global_state have been moved to components.engine
 
 
 class Traversal:
@@ -43,9 +41,5 @@ blue_cube
     def go_to_position(self, final_position):
         scan_interval = 10
         cubes_position = scan(scan_interval)
-        
 
 
-
-                
-            

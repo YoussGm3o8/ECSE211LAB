@@ -32,34 +32,6 @@ arm = Motor("A")
 
 # functions
 
-
-def activate_wheels(action):
-    wheel_left.set_dps(2 * WHEEL_ACTION.get(action)[0])
-    wheel_right.set_dps(2 * WHEEL_ACTION.get(action)[1])
-
-
-def stop_wheels():
-    wheel_left.set_dps(0)
-    wheel_right.set_dps(0)
-
-
-# turns right for 0.05 seconds
-def turn_right():
-    activate_wheels("right")
-    time.sleep(0.05)
-    stop_wheels()
-
-
-# turns left for 0.1 seconds
-def turn_left():
-    activate_wheels("left")
-    time.sleep(0.1)
-    stop_wheels()
-
-
-# hand Motor and hatch Motor relocated to objects.py
-
-
 def stop():
     wheel_left.set_dps(0)
     wheel_right.set_dps(0)
@@ -142,5 +114,3 @@ def scan():
     with open("latest_scan.csv", "w") as f:
         w = csv.writer(f)
         w.writerow(buffer)
-
-
