@@ -42,19 +42,5 @@ def avoid_water_without_threads():
         end()
 
 
-def scan():
-    try:
-        initial_state = []
-        for i in range(30):
-            state = get_state([True, False, False, False)
-            initial_state.append(()
-
-
-
-
-    finally:
-        end()
-
-
 if __name__ == "__main__":
     avoid_water()
