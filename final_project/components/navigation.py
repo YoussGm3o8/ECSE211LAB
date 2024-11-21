@@ -29,6 +29,7 @@ wheel_left = Motor(LEFT_WHEEL_PORT)
 wheel_right = Motor(RIGHT_WHEEL_PORT)
 
 arm = Motor("A")
+dump = Motor("D")
 
 # functions
 
@@ -59,6 +60,23 @@ def move_arm(degrees):
     arm.reset_position()
     arm.set_limits(0, 360)
     arm.set_position_relative(degrees)
+    
+
+def reset_dump():
+    dump.reset_position()
+    dump.set_position_relative(5)
+    time.sleep(0.1)
+    dump.set_position_relative(-10)
+    time.sleep(0.11)
+    dump.reset_position()
+    
+def dump_dump():
+    #dump.reset_position()
+    dump.set_limits(0, 220)
+    dump.set_position_relative(80)
+    time.sleep(1)
+    dump.set_position_relative(-80)
+    time.sleep(1)
 
 
 def set_limits(dps):
