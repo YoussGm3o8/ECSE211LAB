@@ -6,7 +6,7 @@ from collections import deque
 
 # Load your data (replace with correct path if needed)
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv", "us_data3.csv")
+path = os.path.join(path, "csv", "us_data4.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 diffs = np.diff(data[:, 1])
 class Filter:
@@ -43,12 +43,13 @@ class Median_Filter(Filter):
 
 
 class diff:
-    def __init__(self, treshold, width):
+    def __init__(self, treshold, width, alpha=0.5):
         self.treshold = treshold
         self.up = []
         self.down = []
         self.values = []
         self.width = width
+        self.alpha = alpha
 
     def update(self, x, y):
         if len(self.values) == 0:
@@ -60,7 +61,7 @@ class diff:
         if diff > self.treshold:
             self.up.append((x,y))
             return self.is_signal()
-        elif diff < -self.treshold:
+        elif diff < -self.treshold * self.alpha:
             self.down.append((x,y))
         return False
 
@@ -74,7 +75,11 @@ class diff:
 # filter = Median_Filter(1)
 # data = np.array([(x, filter.update(y)) for x, y in data[:]])
 
-d = diff(4, 40)
+treshold = 2.2
+alpha = 0.7
+d = diff(treshold, 20, alpha)
+
+d2 = diff(6, 50, 1)
 
 vars = []
 var = 0
@@ -85,14 +90,17 @@ for i, di in enumerate(diffs):
     var = var - (var - (di - mean) ** 2) * 0.2 
     vars.append(var)
 print(mean, np.mean(diffs))
-plt.plot(data[1:, 0], vars)
+plt.plot(data[1:, 0], vars, alpha=0.3)
 
 
 signals = []
 for s in data:
     new_d = d.update(s[0], s[1])
     if (new_d):
-        plt.axvline(x=d.down[-1][0], color='r', linestyle='--')
+        plt.axvline(x=d.down[-1][0], color='r', linestyle='--', alpha=0.7)
+    new_d2 = d2.update(s[0], s[1])
+    if (new_d2):
+        plt.axvline(x=d2.down[-1][0], color='g', linestyle='--', alpha=0.7)
 
 #plot data
 
@@ -103,5 +111,7 @@ ups = np.array(d.up).reshape(-1, 2)
 downs = np.array(d.down).reshape(-1, 2)
 plt.scatter(ups[:,0], ups[:,1], color='g')
 plt.scatter(downs[:,0], downs[:,1], color='b')
+plt.axhline(y=treshold, color='r', linestyle='--')
+plt.axhline(y=-treshold*alpha, color='r', linestyle='--')
 plt.show()
 
