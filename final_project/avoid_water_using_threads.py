@@ -23,19 +23,25 @@ def avoid_water_using_threads():
         end()
 
 def avoid_water_without_threads():
-    ENABLES = [False, True, True, False]
+    ENABLES = [True, True, True, True]
     try:
         while True:
             state = get_state(ENABLES)
+            print(state.color_sensor)
+            print(state.color_sensor2)
+            if state.color_sensor == "unkown" or state.color_sensor2 == "unkown":
+                nav.stop()
+                time.sleep(0.1)
             if state.color_sensor == "b" or state.color_sensor == "p":
-                nav.turn(SLOW)
+                nav.turn(-SLOW)
                 print("right")
             elif state.color_sensor2 == "b" or state.color_sensor2 == "p":
-                nav.turn(-SLOW)
+                nav.turn(SLOW)
                 print("left")
             else:
-                nav.forward(MODERATE)
-                print("forward")
+                return True
+                #nav.forward(MODERATE)
+                #print("forward")
 
             time.sleep(0.05)
     finally:
