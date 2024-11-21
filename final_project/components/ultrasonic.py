@@ -2,8 +2,6 @@ from utils.brick import EV3UltrasonicSensor
 from common.filters import Median_Filter
 # Constants
 US_SENSOR_PORT = 1
-FILTER_SIZE = 300 #size of filter for the median
-SKIP_BATCH = 1
 
 # Components
 

@@ -1,6 +1,13 @@
-from collections.abc import Iterable
-import statistics as stat
+import csv
+import numpy as np
+import os
+import matplotlib.pyplot as plt
 from collections import deque
+import statistics as stat
+
+path = os.path.dirname(__file__)
+path = os.path.join(path, "csv", "us_data3.csv")
+data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 class Filter:
     def __init__(self, func, buffer_length):
@@ -18,7 +25,7 @@ class Filter:
         self.buffer.append(value)
         return self.func(self.buffer)
 
-    def extend(self, values : Iterable):
+    def extend(self, values):
         self.buffer.extend(values)
         return self.func(self.buffer)
 
@@ -32,10 +39,6 @@ class Filter:
 class Median_Filter(Filter):
     def __init__(self, buffer_length):
         super().__init__(lambda x : stat.median(x), buffer_length)
-
-class Mean_Filter(Filter):
-    def __init__(self, buffer_length):
-        super().__init__(lambda x : stat.mean(x), buffer_length)
 
 class EMA_Derivatives:
     def __init__(self, initial, alpha=0.1):
@@ -81,33 +84,60 @@ class EMA:
         else:
             self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
+treshold = 40
+print(data.shape)
+avg = EMA(alpha=0.1)
+ema = EMA_Derivatives(data[0], alpha=0.7)
+med = Median_Filter(2)
+# median_data = [med.update(j[1] - i[1] / (j[0] - i[0])) for i, j in zip(data[:-1], data[1:])]
+# plt.plot(data[1:, 0], median_data) 
 
-class diff:
-    def __init__(self, treshold, width, alpha):
-        self.treshold = treshold
-        self.up = []
-        self.down = []
-        self.values = []
-        self.width = width
-        self.alpha = alpha
+#process data
+med_buf2 = []
+med_buf = []
+avg_buf = []
+avg.reset(np.mean(data[:30,1]))
+for x, y in data:
+    y_m = med.update(y)
+    y_a = avg.update(y)
+    med_buf2.append((x, y_m))
+    if y_m <= y_a:
+        med_buf.append((x, y_m))
+    else:
+        med_buf.append((x, y_a))
 
-    def update(self, x, y):
-        if len(self.values) == 0:
-            self.values.append(y)
-            return False
-        diff = y - self.values[-1]
-        self.values.append(y)
+    avg_buf.append((x, y_a))
+dd = []
 
-        if diff > self.treshold:
-            self.up.append((x,y))
-            return self.is_signal()
-        elif diff < -self.treshold * self.alpha:
-            self.down.append((x,y))
-        return False
+for i in med_buf:
+    deriv = ema.update(i)
+    dd.append(deriv)
 
-    def is_signal(self):
-        if len(self.up) > 0 and len(self.down) > 0:
-            if abs(self.down[-1][0] - self.up[-1][0]) < self.width:
-                return True
-        return False
+def detection():
+    signal_detected = 0
+    down_signal = 0
+    for i, j, d in zip(dd[:-1], dd[1:], data[1:]):
+        if j < -0.3:
+            down_signal = d[0]
 
+        elif j > 0.3:
+            if signal_detected > down_signal and signal_detected - down_signal < treshold:
+                plt.axvline(x=signal_detected, color='r')
+                signal_detected = 0
+
+        if i * j < 0 and i < j:
+            signal_detected = d[0]
+
+detection()
+med_buf = np.array(med_buf)
+med_buf2 = np.array(med_buf2)
+
+mean = np.mean(data[:, 1])
+print(mean)
+avg_buf = np.array(avg_buf)
+plt.plot(avg_buf[:, 0], avg_buf[:, 1]-mean, alpha=1, c='b')
+plt.plot(med_buf[:, 0], med_buf[:, 1]-mean, alpha=1, c='r')
+plt.plot(med_buf[:, 0], np.array(dd), alpha=1, c='g')
+plt.plot(med_buf2[:, 0], med_buf2[:, 1]-mean, alpha=1, c='y')
+plt.axhline(y=0, color='k')
+plt.show()

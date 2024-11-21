@@ -62,5 +62,5 @@ class Color_Sensor2(Color_Sensor):
         return button2_svm.predict(val[:-1])
 
 
-color_sensor = Color_Sensor(COLOR_SENSOR_PORT) 
-color_sensor2 = Color_Sensor2(COLOR_SENSOR_PORT) 
+color_sensor = Color_Sensor(COLOR_SENSOR_PORT)
+color_sensor2 = Color_Sensor2(COLOR_SENSOR_PORT2)

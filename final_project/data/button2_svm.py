@@ -26,8 +26,16 @@ def project(pixel, weight, bias):
             ]
 """
 
+def is_unknown(pixel, treshold=1150):
+    dist = pixel[0] ** 2 + pixel[1] ** 2 + pixel[2] ** 2
+    return dist < treshold
+
 
 def predict(pixel):
+
+    if is_unknown(pixel):
+        return 'unknown'
+
     if not project(pixel, weights[0][0], weights[0][1]):
         #green blue or purple
         if not project(pixel, weights[1][0], weights[1][1]):

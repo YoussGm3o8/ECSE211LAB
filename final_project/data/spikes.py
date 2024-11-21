@@ -1,7 +1,14 @@
-from collections.abc import Iterable
+import numpy as np
 import statistics as stat
+import os
+import matplotlib.pyplot as plt
 from collections import deque
 
+# Load your data (replace with correct path if needed)
+path = os.path.dirname(__file__)
+path = os.path.join(path, "csv", "us_data4.csv")
+data = np.genfromtxt(path, delimiter=",", skip_header=1)
+diffs = np.diff(data[:, 1])
 class Filter:
     def __init__(self, func, buffer_length):
         self.buffer = deque(maxlen=buffer_length)
@@ -18,7 +25,7 @@ class Filter:
         self.buffer.append(value)
         return self.func(self.buffer)
 
-    def extend(self, values : Iterable):
+    def extend(self, values):
         self.buffer.extend(values)
         return self.func(self.buffer)
 
@@ -33,57 +40,10 @@ class Median_Filter(Filter):
     def __init__(self, buffer_length):
         super().__init__(lambda x : stat.median(x), buffer_length)
 
-class Mean_Filter(Filter):
-    def __init__(self, buffer_length):
-        super().__init__(lambda x : stat.mean(x), buffer_length)
 
-class EMA_Derivatives:
-    def __init__(self, initial, alpha=0.1):
-        assert(len(initial) == 2)
-        self.alpha = alpha
-        self.prev = initial
-        self.value = None
-
-    def reset(self, initial):
-        self.prev = initial
-        self.value = None
-
-    def update(self, current):
-        delta_x = current[0] - self.prev[0]
-        delta_y = current[1] - self.prev[1]
-        #clamp delta_x
-        if delta_x < 0.001 and delta_x >= 0:
-            delta_x = 0.001
-        elif delta_x > -0.001 and delta_x < 0:
-            delta_x = -0.001
-
-        val = delta_y / delta_x
-
-        if self.value is None:
-            self.value = val
-        else:
-            self.value = self.alpha * val + (1 - self.alpha) * self.value
-
-        self.prev = current
-        return self.value
-
-class EMA:
-    def __init__(self, alpha=0.1):
-        self.alpha = alpha
-        self.value = None
-
-    def reset(self, initial=None):
-        self.value = initial
-
-    def update(self, value):
-        if self.value is None:
-            self.value = value
-        else:
-            self.value = self.alpha * value + (1 - self.alpha) * self.value
-        return self.value
 
 class diff:
-    def __init__(self, treshold, width, alpha):
+    def __init__(self, treshold, width, alpha=0.5):
         self.treshold = treshold
         self.up = []
         self.down = []
@@ -110,4 +70,48 @@ class diff:
             if abs(self.down[-1][0] - self.up[-1][0]) < self.width:
                 return True
         return False
+
+
+# filter = Median_Filter(1)
+# data = np.array([(x, filter.update(y)) for x, y in data[:]])
+
+treshold = 2.2
+alpha = 0.7
+d = diff(treshold, 20, alpha)
+
+d2 = diff(6, 50, 1)
+
+vars = []
+var = 0
+mean = 0
+diffs = np.diff(data[:,1]).reshape(-1, 1)
+for i, di in enumerate(diffs):
+    mean = mean - (mean - di) / (i +1) 
+    var = var - (var - (di - mean) ** 2) * 0.2 
+    vars.append(var)
+print(mean, np.mean(diffs))
+plt.plot(data[1:, 0], vars, alpha=0.3)
+
+
+signals = []
+for s in data:
+    new_d = d.update(s[0], s[1])
+    if (new_d):
+        plt.axvline(x=d.down[-1][0], color='r', linestyle='--', alpha=0.7)
+    new_d2 = d2.update(s[0], s[1])
+    if (new_d2):
+        plt.axvline(x=d2.down[-1][0], color='g', linestyle='--', alpha=0.7)
+
+#plot data
+
+plt.plot(data[:,0], data[:,1])
+plt.plot(data[1:,0], diffs)
+
+ups = np.array(d.up).reshape(-1, 2)
+downs = np.array(d.down).reshape(-1, 2)
+plt.scatter(ups[:,0], ups[:,1], color='g')
+plt.scatter(downs[:,0], downs[:,1], color='b')
+plt.axhline(y=treshold, color='r', linestyle='--')
+plt.axhline(y=-treshold*alpha, color='r', linestyle='--')
+plt.show()
 
