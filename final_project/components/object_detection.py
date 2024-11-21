@@ -1,27 +1,43 @@
 import components.navigation as nav
-import engine
+import components.engine as engine
 from common.filters import diff
 import time
+import communication.client as client
 
 
-def scan(client_callback=None):
+def scan(maxtime=None, client_callback=None):
     """
     Turn until a bloc is detected
     """
-    d = diff(5, 50) #ideally we change these parameters for each distances (close, medium, far)
-    nav.turn(nav.MODERATE)
+    d = diff(2.5, 20, 0.7) #ideally we change these parameters for each distances (close, medium, far)
+    d2 = diff(5, 50, 1) #ideally we change these parameters for each distances (close, medium, far)
+    nav.turn(nav.SLOW)
+
+    if maxtime is not None:
+        iterations = int(maxtime / 0.05)
+    else:
+        iterations = 100000
     try:
-        while True:
+        for i in range(iterations):
             state = engine.get_state()
+            if d2.update(state.g_sensor, state.us_sensor):
+                nav.stop()
+                return d2.down[-1][0]
             if d.update(state.g_sensor, state.us_sensor):
                 nav.stop()
                 return d.down[-1][0] #alternatively you can return the midpoint between d.up[-1][0] and d.down[-1][0]
             if client_callback is not None:
                 client_callback(("scan", (state.g_sensor, state.us_sensor, d.up, d.down, d.treshold, d.width)))
             time.sleep(0.05)
+        nav.stop()
+        return None
     finally:
-        engine.end()
+        return None
 
+
+if __name__ == "__main__":
+    cl = client.Client()
+    scan(cl.send)
 # def scan_mean(client_callback=None):
 #     nav.turn(nav.MODERATE)
 #     state = engine.get_state()
