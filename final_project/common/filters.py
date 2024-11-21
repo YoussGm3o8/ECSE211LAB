@@ -82,3 +82,31 @@ class EMA:
             self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
 
+class diff:
+    def __init__(self, treshold, width):
+        self.treshold = treshold
+        self.up = []
+        self.down = []
+        self.values = []
+        self.width = width
+
+    def update(self, x, y):
+        if len(self.values) == 0:
+            self.values.append(y)
+            return False
+        diff = y - self.values[-1]
+        self.values.append(y)
+
+        if diff > self.treshold:
+            self.up.append((x,y))
+            return self.is_signal()
+        elif diff < -self.treshold:
+            self.down.append((x,y))
+        return False
+
+    def is_signal(self):
+        if len(self.up) > 0 and len(self.down) > 0:
+            if abs(self.down[-1][0] - self.up[-1][0]) < self.width:
+                return True
+        return False
+

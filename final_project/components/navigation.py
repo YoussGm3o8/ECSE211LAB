@@ -80,37 +80,3 @@ def rotate(speed, stop_angle):
         print(_angle)
         continue
     stop()
-
-
-def scan():
-    #NOTE: add time.sleep() or use threads
-    buffer = []
-    angle = poll(g_sensor.fetch)
-    turn(90)
-    _angle = (poll(g_sensor.fetch) - angle)
-    while _angle < 90:
-        _angle = (poll(g_sensor.fetch) - angle)
-        buffer.append((_angle, us_sensor.fetch()))
-        print(_angle)
-        continue
-    stop()
-
-    turn(-90)
-    _angle = (poll(g_sensor.fetch) - angle)
-    while _angle > -90:
-        _angle = (poll(g_sensor.fetch) - angle)
-        print(_angle)
-        buffer.append((_angle, us_sensor.fetch()))
-        continue
-    stop()
-    turn(90)
-    _angle = (poll(g_sensor.fetch) - angle)
-    while _angle < 0:
-        _angle = (poll(g_sensor.fetch) - angle)
-        print(_angle)
-        buffer.append((_angle, us_sensor.fetch()))
-        continue
-    stop()
-    with open("latest_scan.csv", "w") as f:
-        w = csv.writer(f)
-        w.writerow(buffer)
