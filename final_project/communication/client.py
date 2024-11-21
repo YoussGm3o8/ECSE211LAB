@@ -10,7 +10,7 @@ NOTE: this should not be used in the final product. This is only for debugging p
 """
 
 
-SERVER_IP = '192.168.50.154'
+SERVER_IP = '192.168.50.155'
 PORT = 22005
 
 
