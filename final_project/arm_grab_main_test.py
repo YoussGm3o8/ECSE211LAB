@@ -181,70 +181,72 @@ def grab_cube():
     #nav.dump_start()
     nb_of_tries = 0
     #while nb_of_tries < 2:
-    find_cube()
+    if find_cube() is True:
     
-    #Read Cube Color
-    nav.turn(MODERATE)
-    time.sleep(0.2)
-    nav.stop()
-    #nav.move_arm(-160)
-    #time.sleep(1)
-    nav.forward(MODERATE)
-    time.sleep(0.4)
-    nav.stop()
+        #Read Cube Color
+        nav.turn(MODERATE)
+        time.sleep(0.2)
+        nav.stop()
+        #nav.move_arm(-160)
+        #time.sleep(1)
+        nav.forward(MODERATE)
+        time.sleep(0.4)
+        nav.stop()
+        
+        color = None
+        
+        while (color == 'p' or color == None):
+            color = color_sensor_left.fetch()
+            print(color)
+            time.sleep(0.05)
     
-    color = None
-    
-    while (color == 'p' or color == None):
-        color = color_sensor_left.fetch()
+        nav.stop()
+        nav.forward(-MODERATE)
+        time.sleep(1)
+        nav.stop()
+        
+        #nav.move_arm(160)
+        #time.sleep(1)
+        nav.turn(-SLOW)
+        time.sleep(0.4)
+        nav.stop()
         print(color)
-        time.sleep(0.05)
-
-    nav.stop()
-    nav.forward(-MODERATE)
-    time.sleep(1)
-    nav.stop()
-    
-    #nav.move_arm(160)
-    #time.sleep(1)
-    nav.turn(-SLOW)
-    time.sleep(0.4)
-    nav.stop()
-    print(color)
-    
-    
-    
-    while True:
-        if color == 'o' or color == 'y':
-            #Grab Cube
-            
-            nav.move_arm(-80)
-            time.sleep(2)
-            #move forward here
-            nav.forward(MODERATE)
-            time.sleep(0.9)
-            nav.stop()
-            
-            
-            nav.move_arm(-220)
-            time.sleep(0.7)
-            nav.move_arm(220)
-            #move back here
-            nav.forward(-MODERATE)
-            time.sleep(0.9)
-            nav.stop()
-            
-            #time.sleep(1)
-            nav.move_arm(80)
-            time.sleep(0.2)
-            #nav.dump_dump()
-            return True
-            
-        else:
-            nav.turn(-MODERATE)
-            time.sleep(1)
-            nav.stop()
-            return False
+        
+        
+        
+        while True:
+            if color == 'o' or color == 'y':
+                #Grab Cube
+                
+                nav.move_arm(-80)
+                time.sleep(2)
+                #move forward here
+                nav.forward(MODERATE)
+                time.sleep(0.9)
+                nav.stop()
+                
+                
+                nav.move_arm(-220)
+                time.sleep(0.7)
+                nav.move_arm(220)
+                #move back here
+                nav.forward(-MODERATE)
+                time.sleep(0.9)
+                nav.stop()
+                
+                #time.sleep(1)
+                nav.move_arm(80)
+                time.sleep(0.2)
+                #nav.dump_dump()
+                return True
+                
+            else:
+                nav.turn(-MODERATE)
+                time.sleep(1)
+                nav.stop()
+                return False
+    else:
+        return False
 
 def avoid_water():
     #nav.forward(MODERATE)
