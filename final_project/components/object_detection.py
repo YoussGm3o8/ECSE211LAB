@@ -1,6 +1,6 @@
 import components.navigation as nav
 import components.engine as engine
-from common.filters import diff
+from common.filters import diff, Deriver
 import time
 import communication.client as client
 
@@ -17,75 +17,47 @@ def scan(maxtime=None, client_callback=None):
         iterations = int(maxtime / 0.05)
     else:
         iterations = 100000
+    for _ in range(iterations):
+        state = engine.get_state()
+        if d2.update(state.g_sensor, state.us_sensor):
+            nav.stop()
+            return d2.down[-1]
+        if d.update(state.g_sensor, state.us_sensor):
+            nav.stop()
+            return d.down[-1] #alternatively you can return the midpoint between d.up[-1][0] and d.down[-1][0]
+        if client_callback is not None:
+            client_callback(("scan", (state.g_sensor, state.us_sensor, d.up, d.down, d.treshold, d.width)))
+        time.sleep(0.05)
+    nav.stop()
+    return None
+
+def navigate_row(client_callback=None):
+    d = Deriver(8)
     try:
-        for i in range(iterations):
-            state = engine.get_state()
-            if d2.update(state.g_sensor, state.us_sensor):
-                nav.stop()
-                return d2.down[-1][0]
-            if d.update(state.g_sensor, state.us_sensor):
-                nav.stop()
-                return d.down[-1][0] #alternatively you can return the midpoint between d.up[-1][0] and d.down[-1][0]
-            if client_callback is not None:
-                client_callback(("scan", (state.g_sensor, state.us_sensor, d.up, d.down, d.treshold, d.width)))
+        while True:
             time.sleep(0.05)
-        nav.stop()
-        return None
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            val = d.update(state.us_sensor)
+            if val is None:
+                continue
+            if val < 0 and state.us_sensor < 30:
+                nav.turn(-nav.SLOW)
+            elif val > 0:
+                nav.turn(nav.SLOW)
+            if client_callback is not None:
+                client_callback(("nav", (state.us_sensor, val)))
     finally:
-        return None
+        engine.end()
 
-
-if __name__ == "__main__":
-    cl = client.Client()
-    scan(cl.send)
-# def scan_mean(client_callback=None):
-#     nav.turn(nav.MODERATE)
-#     state = engine.get_state()
-#     mean = state.g_sensor
-#     for _ in range(30):
-#         if client_callback is not None:
-#             client_callback(("mean", state.g_sensor))
-#         time.sleep(0.05)
-#         state = engine.get_state()
-#         mean += state.g_sensor
-#     nav.stop()
-#     return mean / 31
-#
-# def scan_back(mean, treshold=10, client_callback=None):
-#     avg = EMA(alpha=0.05)
-#     avg.reset(mean)
-#     med = Median_Filter(10)
-#
-#     nav.turn(-nav.MODERATE)
-#     state = engine.get_state()
-#     ema = EMA_Derivatives((state.g_sensor,state.us_sensor), alpha=0.55)
-#     med.update(state.us_sensor)
-#     d1 = None
-#
-#     while True:
-#         time.sleep(0.05)
-#         state = engine.get_state()
-#         m = med.update(state.us_sensor)
-#         a = avg.update(state.us_sensor)
-#
-#         d0 = ema.update((state.g_sensor, state.us_sensor))
-#
-#         if d1 is None:
-#             d1 = d0
-#             continue
-#
-#         if d1 * d0 < 0:
-#             if m < a - treshold:
-#                 nav.stop()
-#                 return state.g_sensor
-#             else:
-#                 print("possible signal detected here (change treshold if this is false negative)")
-#         elif abs(d0) < 0.01:
-#             if m < a - treshold:
-#                 nav.stop()
-#                 return state.g_sensor
-#             else:
-#                 print("possible signal detected here (change treshold if this is false negative)")
-#
-#         if client_callback is not None:
-#             client_callback(("scan", (m, a, d0, d1, treshold)))
+def run_row(client_callback=None):
+    try:
+        nav.forward(nav.SLOW)
+        while True:
+            time.sleep(0.05)
+            state = engine.get_state()
+            if client_callback is not None:
+                client_callback(("row", state))
+    finally:
+        engine.end()

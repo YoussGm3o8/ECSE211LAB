@@ -111,3 +111,19 @@ class diff:
                 return True
         return False
 
+class Deriver:
+    def __init__(self, treshold):
+        self.treshold = treshold
+        self.values = []
+
+    def update(self, y):
+        if len(self.values) == 0:
+            self.values.append(y)
+            return None
+        diff = y - self.values[-1]
+        self.values.append(y)
+        if -self.treshold < diff < self.treshold:
+            return 0
+        return diff
+
+
