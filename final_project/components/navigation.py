@@ -57,7 +57,7 @@ def turn(dps):
 
 def move_arm(degrees):
     arm.reset_position()
-    arm.set_limits(0, 180)
+    arm.set_limits(0, 360)
     arm.set_position_relative(degrees)
 
 
