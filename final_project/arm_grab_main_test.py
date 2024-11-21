@@ -8,9 +8,11 @@ import time
 from components.gyrosensor import g_sensor
 import components.navigation as nav
 from components.ultrasonic import us_sensor
-from components import colorsensor
+from components.colorsensor import color_sensor, color_sensor2
 from common.wrappers import Filtered_Sensor
 from common.filters import Median_Filter
+from components import engine
+import components.object_detection as od
 
 #CONSTANTS
 
@@ -21,9 +23,9 @@ MODERATE = 180
 FAST = 360
 
 #apply median filter to sensor with a window of 10
-us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
-color_sensor_left = colorsensor.Color_Sensor2(2)
-color_sensor_right = colorsensor.Color_Sensor(3)
+us_sensor = engine.us_sensor
+color_sensor_left = color_sensor
+color_sensor_right = color_sensor2
 #NOTE: the other sensors are called g_sensor and color_sensor (they are already initialized)
 
 
@@ -187,7 +189,8 @@ def find_cube():
 #Arm Grab Cube function
 
 def grab_cube():
-    if find_cube() is True:
+    if True:
+        od.scan(3)
     
         #Read Cube Color
         nav.turn(MODERATE)
@@ -300,12 +303,18 @@ def main():
                     dist = wait_for(us_sensor.fetch)
                     nav.forward(speed)
 
-                if color_sensor_left.fetch() == "y":
+                if color_sensor_left.fetch() == "y" and us_sensor.fetch() < 30:
+                    nav.forward(MODERATE)
+                    time.sleep(1)
+                    nav.stop()
+                    nav.turn(MODERATE) # turn right
+                    time.sleep(0.25)
+                    nav.stop()
                     nav.forward(MODERATE)
                     time.sleep(0.3)
                     nav.stop()
                     nav.turn(MODERATE) # turn right
-                    time.sleep(1)
+                    time.sleep(0.25)
                     nav.stop()
                     nav.forward(MODERATE)
                     time.sleep(0.3)
@@ -335,5 +344,5 @@ def main():
                      dist = us_sensor.fetch()
 
     finally:
-      reset_brick()
+      engine.end()
 
