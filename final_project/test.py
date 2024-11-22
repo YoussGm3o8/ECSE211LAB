@@ -1,4 +1,4 @@
-from components.object_detection import scan, navigate_row, run_row
+from components.object_detection import scan, follow_gradient, run_row
 import communication.client as client
 import components.engine as engine
 import time
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "--scan":
         scan(client_callback=cl.send)
     if sys.argv[1] == "--nav":
-        navigate_row(cl.send)
+        follow_gradient(cl.send)
     elif sys.argv[1] == "--test":
         try:
             while True:

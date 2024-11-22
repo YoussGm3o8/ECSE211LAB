@@ -40,7 +40,7 @@ state = namedtuple("state", ["us_sensor", "color_sensor", "color_sensor2", "g_se
 global_state = Queue(maxsize=2)
 global_enable = [True]*4 #enable/disable sensors in the order of above initialization
 
-# us_sensor = Filtered_Sensor(us_sensor, Median_Filter(5))
+us_sensor = Filtered_Sensor(us_sensor, Median_Filter(5))
 th_engine = threads.ThreadEngine()
 
 def get_state(enables = global_enable):

@@ -20,20 +20,20 @@ if __name__ == "__main__":
             if message[0] == "test":
                 t = time.time()
                 buffer.append((t, message.us_sensor))
-                plt.scatter(t, message.us_sensor)
+                plt.scatter(t, message.us_sensor, color='red')
                 plt.draw()
                 plt.pause(0.05)
             elif message[0] == "nav":
                 t = time.time()
                 buffer.append((t, message[1][0], message[1][1]))
                 print(message[1][0])
-                plt.bar(t, message[1][1])
+                plt.bar(t, message[1][1], color='blue')
                 plt.draw()
                 plt.pause(0.05)
             elif message[0] == "row":
                 t = time.time()
-                buffer.append((t, message[1]))
-                plt.bar(t, message[1].us_sensor)
+                buffer.append((t, message[1].us_sensor, message[1].g_sensor))
+                plt.bar(t, message[1].us_sensor, color='green')
                 plt.draw()
                 plt.pause(0.05)
 

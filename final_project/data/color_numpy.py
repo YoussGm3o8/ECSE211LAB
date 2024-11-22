@@ -11,12 +11,14 @@ if __name__ != "__main__":
 path = os.path.join(os.path.dirname(__file__), "csv", "color")
 path = os.path.join(path, "sensor2")
 print(path)
+
 green = np.genfromtxt(os.path.join(path, "green.csv"), delimiter=',', skip_header=1)
 blue = np.genfromtxt(os.path.join(path, "blue.csv"), delimiter=',', skip_header=1)
 red = np.genfromtxt(os.path.join(path, "red.csv"), delimiter=',', skip_header=1)
 yellow = np.genfromtxt(os.path.join(path, "yellow.csv"), delimiter=',', skip_header=1)
 orange = np.genfromtxt(os.path.join(path, "orange.csv"), delimiter=',', skip_header=1)
 purple = np.genfromtxt(os.path.join(path, "purple.csv"), delimiter=',', skip_header=1)
+white = np.genfromtxt(os.path.join(path, "white.csv"), delimiter=',', skip_header=1)
 
 def normalize(data):
     s = data.sum(axis=1).reshape(-1, 1)
@@ -30,9 +32,10 @@ red_norm = normalize(red)
 yellow_norm = normalize(yellow)
 orange_norm = normalize(orange)
 purple_norm = normalize(purple)
+white_norm = normalize(white)
 
 if __name__ == "__main__":
-    from button2_svm import predict
+    # from button2_svm import predict
 
     print(purple.shape)
     #scatter plot 3d
@@ -44,6 +47,7 @@ if __name__ == "__main__":
     ax.scatter(orange_norm[:,0], orange_norm[:,1], orange_norm[:,2], c='orange', marker='o', label='orange')
     ax.scatter(purple_norm[:,0], purple_norm[:,1], purple_norm[:,2], c='purple', marker='o', label='purple')
     ax.scatter(green_norm[:,0], green_norm[:,1], green_norm[:,2], c='g', marker='o', label='green')
+    ax.scatter(white_norm[:,0], white_norm[:,1], white_norm[:,2], c='gray', marker='o', label='white')
     plt.show()
 
     fig = plt.figure()
@@ -54,8 +58,9 @@ if __name__ == "__main__":
     ax.scatter(yellow[:,0], yellow[:,1], yellow[:,2], c='y', marker='o', label='yellow')
     ax.scatter(orange[:,0], orange[:,1], orange[:,2], c='orange', marker='o', label='orange')
     ax.scatter(purple[:,0], purple[:,1], purple[:,2], c='purple', marker='o', label='purple')
+    ax.scatter(white[:,0], white[:,1], white[:,2], c='gray', marker='o', label='white')
     plt.show()
-
+    exit()
     #measure accuracy of button1_svm.predict(pixel)
     green_correct = 0
     blue_correct = 0
