@@ -9,7 +9,7 @@ if __name__ != "__main__":
 
 #open green.csv to numpy
 path = os.path.join(os.path.dirname(__file__), "csv", "color")
-path = os.path.join(path, "sensor2")
+# path = os.path.join(path, "sensor2")
 print(path)
 
 green = np.genfromtxt(os.path.join(path, "green.csv"), delimiter=',', skip_header=1)
@@ -35,7 +35,7 @@ purple_norm = normalize(purple)
 white_norm = normalize(white)
 
 if __name__ == "__main__":
-    # from button2_svm import predict
+    from button1_svm import predict
 
     print(purple.shape)
     #scatter plot 3d
@@ -60,7 +60,6 @@ if __name__ == "__main__":
     ax.scatter(purple[:,0], purple[:,1], purple[:,2], c='purple', marker='o', label='purple')
     ax.scatter(white[:,0], white[:,1], white[:,2], c='gray', marker='o', label='white')
     plt.show()
-    exit()
     #measure accuracy of button1_svm.predict(pixel)
     green_correct = 0
     blue_correct = 0
@@ -87,6 +86,13 @@ if __name__ == "__main__":
     for pixel in purple:
         if predict(pixel) == 'p':
             purple_correct += 1
+
+    white_correct = 0
+    for pixel in white:
+        if predict(pixel) == 'w':
+            white_correct += 1
+
+    print("White: ", white_correct/white.shape[0])
     print("Green: ", green_correct/green.shape[0])
     print("Blue: ", blue_correct/blue.shape[0])
     print("Red: ", red_correct/red.shape[0])

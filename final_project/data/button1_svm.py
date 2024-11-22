@@ -18,16 +18,17 @@ path = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(path, 'weights/button1_w.pkl'), 'rb') as f:
     weights = pickle.load(f)
 
-"""decision_function = [
-        ([green, blue], [orange, red, purple, yellow]),
-        ([green], [blue]),
-        ([orange, red], [purple, yellow]),
-        ([purple], [yellow]),
-        ([orange, yellow], [red]),
-        ([yellow], [orange])
-        ]
-
 """
+    decision_function = [
+        ([green, blue], [white, orange, red, purple, yellow]),
+        ([green], [blue]),
+        ([orange, red, yellow], [purple, white]),
+        ([purple], [white]),
+        ([orange, red], [yellow]),
+        ([orange], [red])
+        ]
+"""
+
 def project(pixel, weight, bias):
     """
         return False for group0 and True for group1
@@ -44,23 +45,35 @@ def is_unknown(pixel, treshold=1150):
     dist = pixel[0] ** 2 + pixel[1] ** 2 + pixel[2] ** 2
     return dist < treshold
 
+def normalize(pixel):
+    s = sum(pixel)
+    if s == 0:
+        return pixel
+    return [i/s for i in pixel]
+
 
 def predict(pixel):
+    
+    pixel = normalize(pixel)
+    # if is_unknown(pixel):
+    #     return 'unknown'
 
-    if is_unknown(pixel):
-        return 'unknown'
-
-    if not project(pixel, weights[0][0], weights[0][1]):
-        if not project(pixel, weights[1][0], weights[1][1]):
+    if project(pixel, weights[0][0], weights[0][1]):
+        if project(pixel, weights[1][0], weights[1][1]):
             return 'g'
         else:
             return 'b'
-    elif project(pixel, weights[2][0], weights[2][1]) and not project(pixel, weights[3][0], weights[3][1]):
-        return 'p'
-    elif not project(pixel, weights[4][0], weights[4][1]):
-        if not project(pixel, weights[5][0], weights[5][1]):
-            return 'y'
-        else:
-            return 'o' 
     else:
-        return 'r'
+        if not project(pixel, weights[2][0], weights[2][1]):
+            if not project(pixel, weights[3][0], weights[3][1]):
+                return 'w'
+            else:
+                return 'p'
+        else:
+            if not project(pixel, weights[4][0], weights[4][1]):
+                return 'y'
+            else:
+                if not project(pixel, weights[5][0], weights[5][1]):
+                    return 'r'
+                else:
+                    return 'o'

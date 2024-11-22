@@ -13,14 +13,16 @@ def project(pixel, weight, bias):
 
     res = weight[0] * pixel[0] + weight[1] * pixel[1] + weight[2] * pixel[2] + bias
     if res > 0:
-        return False
-    else:
         return True
+    else:
+        return False
+
 """
     decision_function = [
-            ([green, blue, purple], [orange, red, yellow]),
-            ([green], [purple, blue]),
-            ([purple], [blue]),
+            ([white, green, blue, purple], [orange, red, yellow]),
+            ([green], [purple, blue, white]),
+            ([purple, white], [blue]),
+            ([purple], [white]),
             ([yellow], [orange, red]),
             ([orange], [red])
             ]
@@ -30,26 +32,35 @@ def is_unknown(pixel, treshold=1150):
     dist = pixel[0] ** 2 + pixel[1] ** 2 + pixel[2] ** 2
     return dist < treshold
 
+def normalize(pixel):
+    s = sum(pixel)
+    if s == 0:
+        return pixel
+    return [i/s for i in pixel]
 
 def predict(pixel):
 
-    if is_unknown(pixel):
-        return 'unknown'
+    pixel = normalize(pixel)
+    # if is_unknown(pixel):
+    #     return 'unknown'
 
-    if not project(pixel, weights[0][0], weights[0][1]):
+    if project(pixel, weights[0][0], weights[0][1]):
         #green blue or purple
-        if not project(pixel, weights[1][0], weights[1][1]):
+        if project(pixel, weights[1][0], weights[1][1]):
             return 'g'
         else:
-            if not project(pixel, weights[2][0], weights[2][1]):
-                return 'p'
+            if project(pixel, weights[2][0], weights[2][1]):
+                if project(pixel, weights[3][0], weights[3][1]):
+                    return 'p'
+                else:
+                    return 'w'
             else:
                 return 'b'
     else:
-        if not project(pixel, weights[3][0], weights[3][1]):
+        if project(pixel, weights[4][0], weights[4][1]):
             return 'y'
         else:
-            if not project(pixel, weights[4][0], weights[4][1]):
+            if project(pixel, weights[5][0], weights[5][1]):
                 return 'o'
             else:
                 return 'r'
