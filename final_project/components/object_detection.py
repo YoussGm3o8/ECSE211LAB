@@ -1,6 +1,7 @@
 import components.navigation as nav
+import statistics as stat
 import components.engine as engine
-from common.filters import diff, Deriver
+from common.filters import Diff, Deriver
 import time
 import communication.client as client
 
@@ -9,8 +10,8 @@ def scan(maxtime=None, client_callback=None):
     """
     Turn until a bloc is detected
     """
-    d = diff(2.5, 20, 0.7) #ideally we change these parameters for each distances (close, medium, far)
-    d2 = diff(5, 50, 1) #ideally we change these parameters for each distances (close, medium, far)
+    d = Diff(2.5, 20, 0.7) #ideally we change these parameters for each distances (close, medium, far)
+    d2 = Diff(5, 50, 1) #ideally we change these parameters for each distances (close, medium, far)
     nav.turn(nav.SLOW)
 
     if maxtime is not None:
@@ -53,7 +54,7 @@ def scan(maxtime=None, client_callback=None):
 
 def follow_gradient(client_callback=None):
     try:
-        d = diff(6, 1.5, 0.8)
+        d = Diff(6, 1.5, 0.8)
         speed = nav.SLOW
         nav.turn(speed)
         while True:
@@ -112,7 +113,7 @@ def run_row(client_callback=None):
             print("error jump_size is None which is impossible")
             return
 
-        d = diff(int(jump_size*0.6), 1.5, 0.8)
+        d = Diff(int(jump_size*0.6), 1.5, 0.8)
 
         speed = -nav.SLOW
         nav.turn(speed)
@@ -131,3 +132,70 @@ def run_row(client_callback=None):
     finally:
         engine.end()
 
+
+def run_row_v2(client_callback=None):
+    try:
+
+        """
+        move forward in a row until a jump in signal is detected (a cube is outside of range)
+        """
+        nav.forward(nav.SLOW)
+        diff_tracker = Deriver(5)
+        memory = None
+        jump_size = 10
+
+        while True:
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            d = diff_tracker.update(state.us_sensor, False)
+
+            if d is None:
+                continue
+
+            if memory is not None:
+                memory += d
+                if memory <= 20:
+                    nav.stop()
+                    break
+
+            if d > diff_tracker.treshold:
+                jump_size = d
+                if len(diff_tracker.values) >= 5:
+                    memory = stat.median(diff_tracker.values[-6:-1])
+                else:
+                    memory = stat.median(diff_tracker.values)
+
+            elif d < -diff_tracker.treshold:
+                jump_size = 10
+                memory = None
+
+            if state.us_sensor < 10:
+                nav.stop()
+                break
+
+            if client_callback is not None:
+                client_callback(("row", state))
+
+            time.sleep(0.05)
+
+        #rotate until detecting the object
+        d = Diff(int(jump_size*0.7), 1.5, 0.8)
+
+        speed = -nav.SLOW
+        nav.turn(speed)
+        while True:
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            val = d.update(time.time(), state.us_sensor)
+
+            if val:
+                speed *= -1
+                nav.turn(speed)
+            if client_callback is not None:
+                client_callback(("row", state))
+            time.sleep(0.05)
+
+    finally:
+        engine.end()
