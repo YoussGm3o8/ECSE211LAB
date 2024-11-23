@@ -1,3 +1,8 @@
+"""
+This script is used to sample the color sensor and save the data to a csv file
+It requires color_visualizer_server.py to be running your computer to visualize the data
+"""
+
 from components.colorsensor import color_sensor
 from utils.brick import reset_brick
 from communication.client import Client

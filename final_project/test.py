@@ -24,3 +24,6 @@ if __name__ == "__main__":
             engine.end()
     elif sys.argv[1] == "--row":
         run_row(client_callback=cl.send)
+
+    cl.exit()
+    engine.end()

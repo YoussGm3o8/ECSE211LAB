@@ -1,13 +1,12 @@
+"""
+color_numpy.py is a file to plot csv color data in 3d and 2d normalized
+and to measure the accuracy of button1_svm.predict(pixel) or button2_svm.predict(pixel)
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-os_main = None
-if __name__ != "__main__":
-    os_main = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
-#open green.csv to numpy
 path = os.path.join(os.path.dirname(__file__), "csv", "color")
 # path = os.path.join(path, "sensor2")
 print(path)
@@ -99,41 +98,3 @@ if __name__ == "__main__":
     print("Yellow: ", yellow_correct/yellow.shape[0])
     print("Orange: ", orange_correct/orange.shape[0])
     print("Purple: ", purple_correct/purple.shape[0])
-    import svm
-    # now do the same using svm.clf
-    green_correct = 0
-    blue_correct = 0
-    red_correct = 0
-    yellow_correct = 0
-    orange_correct = 0
-    purple_correct = 0
-    for pixel in green:
-        if svm.clf.predict([pixel])[0] == 0:
-            green_correct += 1
-    for pixel in blue:
-        if svm.clf.predict([pixel])[0] == 1:
-            blue_correct += 1
-    for pixel in red:
-        if svm.clf.predict([pixel])[0] == 2:
-            red_correct += 1
-    for pixel in yellow:
-        if svm.clf.predict([pixel])[0] == 3:
-            yellow_correct += 1
-    for pixel in orange:
-        if svm.clf.predict([pixel])[0] == 4:
-            orange_correct += 1
-    for pixel in purple:
-        if svm.clf.predict([pixel])[0] == 5:
-            purple_correct += 1
-    print("Green: ", green_correct/green.shape[0])
-    print("Blue: ", blue_correct/blue.shape[0])
-    print("Red: ", red_correct/red.shape[0])
-    print("Yellow: ", yellow_correct/yellow.shape[0])
-    print("Orange: ", orange_correct/orange.shape[0])
-    print("Purple: ", purple_correct/purple.shape[0])
-
-
-else:
-    #reset the root directory to the original
-    if os_main is not None:
-        os.chdir(os_main)

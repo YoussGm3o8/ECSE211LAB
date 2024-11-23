@@ -1,14 +1,8 @@
 """
-Decision function: (based on priority)
-g | b | p vs o | r | y
-[if gbp]
-g vs p | b
-[if pb]
-p vs b
-[else ory]
-y vs o | r
-o vs r
+the script used to train the SVM models weigth for the color sensors
 """
+
+
 from sklearn import svm
 import numpy as np
 import pickle
