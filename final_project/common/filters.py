@@ -67,19 +67,16 @@ class EMA_Derivatives:
         self.prev = current
         return self.value
 
-class EMA:
+class Exponential_Moving_Average:
     def __init__(self, alpha=0.1):
         self.alpha = alpha
         self.value = None
 
-    def reset(self, initial=None):
+    def reset(self, initial=0):
         self.value = initial
 
     def update(self, value):
-        if self.value is None:
-            self.value = value
-        else:
-            self.value = self.alpha * value + (1 - self.alpha) * self.value
+        self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
 
 class Diff:
@@ -136,3 +133,44 @@ class Deriver:
         if -self.treshold < dy < self.treshold:
             return 0
         return dy
+
+
+class Convolution:
+    def __init__(self, kernel):
+        assert(isinstance(kernel, Kernel))
+        self.kernel = kernel
+        self.window = deque(maxlen=kernel.size)
+
+    def reset(self):
+        self.window.clear()
+    
+    def update(self, value):
+        """
+        NOTE: returns 0 if the buffer is not full
+        """
+        self.buffer.append(value)
+        if len(self.window) == self.window.maxlen:
+            return self.kernel(self.window)
+        else:
+            return 0
+
+class Kernel:
+    def __init__(self, size):
+        self.size = size
+    
+    def __call__(self, window):
+        raise NotImplementedError
+
+class SquareWave(Kernel):
+    def __init__(self, size):
+        super().__init__(size)
+        self.w = size // 3
+        self.factor = 1 / self.w
+
+    def __call__(self, window):
+        res = 0
+        for i in range(self.w):
+            res += -0.5*window[i] + window[i+self.w] - 0.5*window[i+2*self.w]
+        return res * self.factor
+
+

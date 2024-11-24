@@ -1,7 +1,7 @@
 import components.navigation as nav
 import statistics as stat
 import components.engine as engine
-from common.filters import Diff, Deriver
+from common.filters import Diff, Deriver, Exponential_Moving_Average, Convolution, SquareWave
 import time
 import communication.client as client
 
@@ -53,6 +53,9 @@ def scan(maxtime=None, client_callback=None):
 #         engine.end()
 
 def follow_gradient(client_callback=None):
+    """
+    The car is supposed to rotate until it detects a cube and oscillate around it
+    """
     try:
         d = Diff(6, 1.5, 0.8)
         speed = nav.SLOW
@@ -72,6 +75,42 @@ def follow_gradient(client_callback=None):
                 client_callback(("nav", (state.us_sensor, val)))
     finally:
         engine.end()
+
+def follow_signals(client_callback=None):
+    """
+    The car is supposed to rotate until it detects a cube and oscillate around it
+
+    NOTE: the us_sensor must not be median_filtered
+    """
+    try:
+        treshold = 2.5
+        kernel = SquareWave(6) #we may want to change this to a greater value if we want to detect cubes from closer distances
+        conv = Convolution(kernel)
+        ema = Exponential_Moving_Average(0.05)
+        state = engine.get_state()
+        while state.us_sensor is None:
+            state = engine.get_state()
+            time.sleep(0.05)
+        ema.reset(state.us_sensor)
+        speed = nav.SLOW
+        nav.turn(speed)
+        while True:
+            time.sleep(0.05)
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+
+            val = conv.update(state.us_sensor - ema.update(state.us_sensor))
+
+            if val < -treshold:
+                speed *= -1
+                nav.turn(speed)
+
+            if client_callback is not None:
+                client_callback(("nav", (state.us_sensor, val)))
+    finally:
+        engine.end()
+
 
 def run_row(client_callback=None):
     try:

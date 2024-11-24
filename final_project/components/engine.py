@@ -58,8 +58,6 @@ def poll_sensors():
     time.sleep(0.05)
 
 
-
-
 def start():
     th_engine.loop(poll_sensors)
 
