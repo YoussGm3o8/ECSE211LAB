@@ -79,30 +79,32 @@ def follow_gradient(client_callback=None):
 def follow_gradient_v2(client_callback=None):
     """
     The car is supposed to rotate until it detects a cube and oscillate around it
+
+    THIS IS BY FAR THE BEST IMPLEMENTATION HOWEVER IT MAY BE TOO SENSITIVE TO NOISE
     """
     try:
         de = Deriver(4)
         ema = Exponential_Moving_Average(0.05)
         speed = nav.SLOW
         state = engine.get_state()
-        while state is None:
+        while state.raw_us_sensor is None:
             state = engine.get_state()
-        ema.reset(state.us_sensor)
+        ema.reset(state.raw_us_sensor)
         nav.turn(speed)
         while True:
             time.sleep(0.05)
             state = engine.get_state()
-            if state.us_sensor is None:
+            if state.raw_us_sensor is None:
                 continue
-            mean = ema.update(state.us_sensor)
-            val = de.update(mean) if state.us_sensor > mean else de.update(state.us_sensor)
+            mean = ema.update(state.raw_us_sensor)
+            val = de.update(mean) if state.raw_us_sensor > mean else de.update(state.raw_us_sensor)
 
             if val < 0:
                 speed *= -1
                 nav.turn(speed)
 
             if client_callback is not None:
-                client_callback(("nav", (state.us_sensor, val)))
+                client_callback(("nav", (state.raw_us_sensor, val)))
     finally:
         engine.end()
 
@@ -118,26 +120,26 @@ def follow_signals(client_callback=None):
         conv = Convolution(kernel)
         ema = Exponential_Moving_Average(0.05)
         state = engine.get_state()
-        while state.us_sensor is None:
+        while state.raw_us_sensor is None:
             state = engine.get_state()
             time.sleep(0.05)
-        ema.reset(state.us_sensor)
+        ema.reset(state.raw_us_sensor)
         speed = nav.SLOW
         nav.turn(speed)
         while True:
             time.sleep(0.05)
             state = engine.get_state()
-            if state.us_sensor is None:
+            if state.raw_us_sensor is None:
                 continue
-            mean = ema.update(state.us_sensor)
-            val = conv.update(mean) if state.us_sensor > mean else conv.update(state.us_sensor)
+            mean = ema.update(state.raw_us_sensor)
+            val = conv.update(mean) if state.raw_us_sensor > mean else conv.update(state.raw_us_sensor)
 
             if val < -treshold:
                 speed *= -1
                 nav.turn(speed)
 
             if client_callback is not None:
-                client_callback(("nav", (state.us_sensor, val)))
+                client_callback(("nav", (state.raw_us_sensor, val)))
     finally:
         engine.end()
 
@@ -206,6 +208,8 @@ def run_row_v2(client_callback=None):
 
         """
         move forward in a row until a jump in signal is detected (a cube is outside of range)
+
+        Adds a memory element to get closer to the cube blindly
         """
         nav.forward(nav.SLOW)
         diff_tracker = Deriver(5)

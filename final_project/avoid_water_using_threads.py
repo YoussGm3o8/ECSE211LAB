@@ -23,10 +23,9 @@ def avoid_water_using_threads():
         end()
 
 def avoid_water_without_threads():
-    ENABLES = [True, True, True, True]
     try:
         while True:
-            state = get_state(ENABLES)
+            state = get_state()
             print(state.color_sensor)
             print(state.color_sensor2)
             if state.color_sensor == "unknown" or state.color_sensor2 == "unknown":

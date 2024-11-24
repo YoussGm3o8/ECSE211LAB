@@ -34,6 +34,17 @@ class Filtered_Sensor:
             return None
         return self.filter.update(v)
 
+class Filtered_Sensor_V2(Filtered_Sensor):
+    """
+    Provides the raw value of the sensor in cases needed
+    """
+    def __init__(self, sensor, filter):
+        super().__init__(sensor, filter)
+    def fetch(self):
+        v = self.sensor.fetch()
+        if v is None:
+            return None, None
+        return self.filter.update(v), v
 
 class Normalized_Sensor:
     def __init__(self, sensor, normalizer):
@@ -47,3 +58,14 @@ class Normalized_Sensor:
             return None
         return self.normalizer.normalize(v)
 
+class US_Sensor_High_PollingRate:
+    def __init__(self, sensor):
+        self.sensor = sensor
+        self.last = None
+    
+    def fetch(self):
+        current = self.sensor.fetch()
+        if current != self.last:
+            self.last = current
+            return current
+        return None

@@ -6,6 +6,15 @@ import matplotlib.pyplot as plt
 data_path = os.path.join(os.path.dirname(__file__), 'csv')
 path = os.path.join(data_path, 'us_data3.csv')
 data = np.genfromtxt(path, delimiter=',', skip_header=1)
+y_prev = None
+new_data = []
+for x, y in data:
+    if y_prev != y:
+        new_data.append([x, y])
+        y_prev = y
+old_data = data
+data = np.array(new_data)
+
 dif = np.diff(data[:, 1])
 print(data.shape)
 
@@ -69,11 +78,12 @@ detected = np.where(data_haar < - 2.5, x_ajusted, 0)
 for d in detected:
     if d == 0:
         continue
-    plt.axvline(x=d, color='r', linestyle='--')
+    # plt.axvline(x=d, color='r', linestyle='--')
 plt.plot(x[1:], dif_clip, label='derivative')
 plt.plot(x, y, label='Original')
 # plt.plot(x, data_haar, label='Haar')
 # plt.plot(x, data_haar_wide, label='Haar')
+plt.plot(old_data[:, 0], old_data[:, 1], label='Filtered')
 plt.plot(x, mean, label='Mean')
 plt.show()
 

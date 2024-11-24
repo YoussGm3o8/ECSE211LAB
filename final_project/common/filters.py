@@ -174,3 +174,14 @@ class SquareWave(Kernel):
         return res * self.factor
 
 
+class US_Sensor_High_PollingRate:
+    def __init__(self, sensor):
+        self.sensor = sensor
+        self.last = None
+    
+    def fetch(self):
+        current = self.sensor.fetch()
+        if current != self.last:
+            self.last = current
+            return current
+        return None
