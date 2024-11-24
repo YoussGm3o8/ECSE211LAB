@@ -116,7 +116,7 @@ class Deriver:
     def update(self, y, apply_treshold=True):
         if len(self.values) == 0:
             self.values.append(y)
-            return None
+            return 0
         dy = y - self.values[-1]
         self.values.append(y)
         if apply_treshold:

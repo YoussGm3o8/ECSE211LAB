@@ -70,10 +70,10 @@ for d in detected:
     if d == 0:
         continue
     plt.axvline(x=d, color='r', linestyle='--')
-# plt.plot(x[1:], dif_clip, label='derivative')
+plt.plot(x[1:], dif_clip, label='derivative')
 plt.plot(x, y, label='Original')
-plt.plot(x, data_haar, label='Haar')
-plt.plot(x, data_haar_wide, label='Haar')
+# plt.plot(x, data_haar, label='Haar')
+# plt.plot(x, data_haar_wide, label='Haar')
 plt.plot(x, mean, label='Mean')
 plt.show()
 

@@ -76,6 +76,36 @@ def follow_gradient(client_callback=None):
     finally:
         engine.end()
 
+def follow_gradient_v2(client_callback=None):
+    """
+    The car is supposed to rotate until it detects a cube and oscillate around it
+    """
+    try:
+        de = Deriver(4)
+        ema = Exponential_Moving_Average(0.05)
+        speed = nav.SLOW
+        state = engine.get_state()
+        while state is None:
+            state = engine.get_state()
+        ema.reset(state.us_sensor)
+        nav.turn(speed)
+        while True:
+            time.sleep(0.05)
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            mean = ema.update(state.us_sensor)
+            val = de.update(mean) if state.us_sensor > mean else de.update(state.us_sensor)
+
+            if val < 0:
+                speed *= -1
+                nav.turn(speed)
+
+            if client_callback is not None:
+                client_callback(("nav", (state.us_sensor, val)))
+    finally:
+        engine.end()
+
 def follow_signals(client_callback=None):
     """
     The car is supposed to rotate until it detects a cube and oscillate around it
@@ -99,8 +129,8 @@ def follow_signals(client_callback=None):
             state = engine.get_state()
             if state.us_sensor is None:
                 continue
-
-            val = conv.update(state.us_sensor - ema.update(state.us_sensor))
+            mean = ema.update(state.us_sensor)
+            val = conv.update(mean) if state.us_sensor > mean else conv.update(state.us_sensor)
 
             if val < -treshold:
                 speed *= -1
@@ -133,8 +163,7 @@ def run_row(client_callback=None):
                 break
 
             val = de.update(state.us_sensor)
-            if val is None:
-                continue
+
             if val > 0:
                 jump_size = val
                 nav.stop()
@@ -188,9 +217,6 @@ def run_row_v2(client_callback=None):
             if state.us_sensor is None:
                 continue
             d = diff_tracker.update(state.us_sensor, False)
-
-            if d is None:
-                continue
 
             if memory is not None:
                 memory += d
