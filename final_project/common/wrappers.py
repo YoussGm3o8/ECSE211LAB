@@ -69,3 +69,14 @@ class US_Sensor_High_PollingRate:
             self.last = current
             return current
         return None
+
+class US_Sensor_High_PollingRate_V2(US_Sensor_High_PollingRate):
+    def __init__(self, sensor):
+        super().__init__(sensor)
+
+    def fetch(self):
+        current = self.sensor.fetch()
+        if current[0] != self.last[0]:
+            self.last = current
+            return current
+        return None, None

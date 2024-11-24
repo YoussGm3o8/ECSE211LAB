@@ -25,7 +25,7 @@ import time
 from components.gyrosensor import g_sensor
 from components.ultrasonic import us_sensor as rus_sensor
 from components.colorsensor import color_sensor, color_sensor2
-from common.wrappers import Filtered_Sensor_V2, US_Sensor_High_PollingRate
+from common.wrappers import Filtered_Sensor_V2, US_Sensor_High_PollingRate, US_Sensor_High_PollingRate_V2
 from common.filters import Median_Filter
 from common import threads
 from queue import Queue
@@ -43,6 +43,7 @@ th_engine = threads.ThreadEngine()
 
 def start():
     global us_sensor
+    # us_sensor = US_Sensor_High_PollingRate_V2(Filtered_Sensor_V2(rus_sensor, Median_Filter(5))) #this this approach with follow_gradient_V2
     us_sensor = Filtered_Sensor_V2(US_Sensor_High_PollingRate(rus_sensor), Median_Filter(5))
     th_engine.loop(poll_sensors)
 

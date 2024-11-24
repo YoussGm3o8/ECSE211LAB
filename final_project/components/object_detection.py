@@ -78,6 +78,8 @@ def follow_gradient(client_callback=None):
 
 def follow_gradient_v2(client_callback=None):
     """
+    TRY TO CHANGE MEDIAN FILTER ORDER IN ENGINE.PY FOR MORE RELIABLE RESULTS
+
     The car is supposed to rotate until it detects a cube and oscillate around it
 
     THIS IS BY FAR THE BEST IMPLEMENTATION HOWEVER IT MAY BE TOO SENSITIVE TO NOISE
