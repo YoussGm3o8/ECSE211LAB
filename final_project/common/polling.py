@@ -20,5 +20,5 @@ def poll_with_timeout(timeout, func, *arg):
         val = func(*arg)
         if val is not None:
             return val
-        if time.time() - ti > 5:
+        if time.time() - ti > timeout:
             return

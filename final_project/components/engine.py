@@ -1,36 +1,28 @@
 """
-This file is used to easily poll the sensors using threads
+Initialization of devices and threads into one file
 
-Example usage:
-    import engine
+To use the devices you have to poll the variables in the global_state list
 
-    engine.start()
+Usage:
 
-    try:
-        while True:
-            state = engine.poll_state()
+    #global_state is a list of the current state of sensors
 
-            if state.us_sensor is not None:
-                print(state.us_sensor)
+    global_state = {us_sensor, color_sensor1, color_sensor2, g_sensor, ...}
 
-            if state.color_sensor is not None:
-                print(state.color_sensor)
+    PLEASE DEFINE ADDTIONAL SENSORS IF NEEDED (ADD TO THE LIST ABOVE AT '...')
 
-            if state.color_sensor2 is not None:
-                print(state.color_sensor2)
+    color_sensor1 and color_sensor2 are colors from the following: {'r, 'o', 'g', 'p', 'b', 'y', 'unknown', None}
 
-            if state.g_sensor is not None:
-                print(state.g_sensor)
-    finally:
-        engine.end() #make sure to call this function to end the threads and reset the brick
+    us_sensor is a float of the distance in cm
+
+    g_sensor is a float of the angle in degrees from start of the program (it can be above 360 or below 0 e.g. 370 or -1012)
 
 
-    Alternatively you can use the engine.get_state() function to get the state of the sensors without using threads.
-    In this case you don't call engine.start() (still use engine.end() to stop the brickpi).
+NOTES: make sure that the main loop is faster than the polling rate of sensor (the queue blocks when full)
 """
 
 import time
-from components.gyrosensor import g_sensor
+# from components.gyrosensor import g_sensor
 from components.ultrasonic import us_sensor
 from components.colorsensor import color_sensor, color_sensor2
 from common.wrappers import Filtered_Sensor
@@ -46,44 +38,26 @@ from utils.brick import reset_brick
 state = namedtuple("state", ["us_sensor", "color_sensor", "color_sensor2", "g_sensor"])
 
 global_state = Queue(maxsize=2)
+global_enable = [True]*4 #enable/disable sensors in the order of above initialization
 
 us_sensor = Filtered_Sensor(us_sensor, Median_Filter(5))
 th_engine = threads.ThreadEngine()
 
-def poll_state():
-    """
-    Use this function to obtain the state of the sensors using threads
-
-    NOTE: polling the sensors will lead to frequent None values for the color sensors therefore you must check for None values
-    """
-    try:
-        colors = global_state.get_nowait()
-    except Exception:
-        colors = [None, None]
-    return state(
-    us_sensor.fetch(),
-    colors[0],
-    colors[1],
-    g_sensor.fetch()
-    )
-
-def get_state():
-    """
-    if you don't want to use threads you can use this function instead
-    """
-    return state(
-    us_sensor.fetch(),
-    color_sensor.fetch(),
-    color_sensor2.fetch(),
-    g_sensor.fetch()
-    )
+def get_state(enables = global_enable):
+        return state(
+        us_sensor.fetch() if enables[0] else "Disabled",
+        color_sensor.fetch() if enables[1] else "Disabled",
+        color_sensor2.fetch() if enables[2] else "Disabled",
+        g_sensor.fetch() if enables[3] else "Disabled")
 
 def poll_sensors():
     """
-    Only polls the color_sensors since they require a delay between each fetch
+        for idx look at common/logging.py
     """
-    global_state.put((color_sensor.fetch(), color_sensor2.fetch()))
+    global_state.put(get_state())
     time.sleep(0.05)
+
+
 
 
 def start():

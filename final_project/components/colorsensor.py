@@ -5,8 +5,7 @@ from data.button1_svm import predict
 import data.button2_svm as button2_svm
 # Constants
 
-COLOR_SENSOR_PORT = 3
-COLOR_SENSOR_PORT2 = 2
+
 
 # Components
 
@@ -14,6 +13,7 @@ COLOR_SENSOR_PORT2 = 2
 class Color_Sensor(EV3ColorSensor):
     def __init__(self, port):
         super().__init__(port)
+        print(f"waiting for Color Sensor on port {port}")
         self.wait_ready()
 
     def __str__(self):
@@ -61,6 +61,3 @@ class Color_Sensor2(Color_Sensor):
             return None
         return button2_svm.predict(val[:-1])
 
-
-color_sensor = Color_Sensor(COLOR_SENSOR_PORT)
-color_sensor2 = Color_Sensor2(COLOR_SENSOR_PORT2)
