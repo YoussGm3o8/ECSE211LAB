@@ -67,19 +67,16 @@ class EMA_Derivatives:
         self.prev = current
         return self.value
 
-class EMA:
+class Exponential_Moving_Average:
     def __init__(self, alpha=0.1):
         self.alpha = alpha
         self.value = None
 
-    def reset(self, initial=None):
+    def reset(self, initial=0):
         self.value = initial
 
     def update(self, value):
-        if self.value is None:
-            self.value = value
-        else:
-            self.value = self.alpha * value + (1 - self.alpha) * self.value
+        self.value = self.alpha * value + (1.0 - self.alpha) * self.value
         return self.value
 
 class Diff:
@@ -119,7 +116,7 @@ class Deriver:
     def update(self, y, apply_treshold=True):
         if len(self.values) == 0:
             self.values.append(y)
-            return None
+            return 0
         dy = y - self.values[-1]
         self.values.append(y)
         if apply_treshold:
@@ -136,3 +133,15 @@ class Deriver:
         if -self.treshold < dy < self.treshold:
             return 0
         return dy
+
+class Delta:
+    def __init__(self):
+        self.prev = None
+
+    def get(self, value):
+        if self.prev is None:
+            self.prev = value
+            return 0
+        d = value - self.prev
+        self.prev = value
+        return d
