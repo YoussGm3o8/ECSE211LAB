@@ -13,8 +13,8 @@ from collections import namedtuple
 from utils.brick import reset_brick
 
 # IMPORTANT: Replace these with your robot's actual measurements
-WHEEL_DIAMETER = 0.05  # Wheel diameter in meters (example value)
-WHEEL_BASE = 0.2  # Distance between wheels in meters (example value)
+WHEEL_DIAMETER = 0.0432  # Wheel diameter in meters (example value)
+WHEEL_BASE = 0.072  # Distance between wheels in meters (example value)
 
 x_pos = 0.0  # Starting x position (bottom left)
 y_pos = 0.0  # Starting y position (bottom left)
@@ -42,41 +42,58 @@ def get_state(enables=global_enable):
         y_pos if enables[5] else "Disabled")
 
 def calculate_position_update(left_speed, right_speed, current_angle):
+    # Convert wheel speeds to linear velocities
     wheel_circumference = math.pi * WHEEL_DIAMETER
     left_linear_velocity = (left_speed / 360) * wheel_circumference
     right_linear_velocity = (right_speed / 360) * wheel_circumference
     
-    # Translational and rotational velocities
-    translational_velocity = (left_linear_velocity + right_linear_velocity) / 2
-    rotational_velocity = (right_linear_velocity - left_linear_velocity) / WHEEL_BASE
-    
     # Time step
     dt = 0.05
     
-    angle_rad = math.radians(current_angle)
-    dx = translational_velocity * math.cos(angle_rad) * dt
-    dy = translational_velocity * math.sin(angle_rad) * dt
+    # Calculate translational velocity (average of wheel speeds)
+    translational_velocity = (left_linear_velocity + right_linear_velocity) / 2
     
+    # Calculate rotational velocity 
+    # For a two-wheeled robot, rotation is based on speed difference
+    rotational_velocity = (right_linear_velocity - left_linear_velocity) / WHEEL_BASE
+    
+    # Determine movement direction
+    movement_direction = 1 if translational_velocity >= 0 else -1
+    
+    # Convert current angle to radians
+    angle_rad = math.radians(current_angle)
+    
+    # Adjust angle for backward movement
+    if movement_direction < 0:
+        angle_rad += math.pi  # Rotate by 180 degrees
+    
+    # Calculate position update
+    dx = abs(translational_velocity) * math.cos(angle_rad) * dt * movement_direction
+    dy = abs(translational_velocity) * math.sin(angle_rad) * dt * movement_direction
+    
+    # Calculate angle update
+    # Positive difference means rotating clockwise
+    # Negative difference means rotating counterclockwise
     d_angle = math.degrees(rotational_velocity * dt)
     
     return dx, dy, d_angle
 
+
 def poll_sensors():
     global x_pos, y_pos, current_angle
-    
+
     left_speed = left_wheel.get_speed()  # in dps
     right_speed = right_wheel.get_speed()  # in dps
     
-    # Added current_angle parameter
     dx, dy, d_angle = calculate_position_update(left_speed, right_speed, current_angle)
 
     x_pos += dx
     y_pos += dy
     
     current_angle = (current_angle + d_angle) % 360
-
-    global_state.put(get_state())
     
+    # Put updated state in global queue
+    global_state.put(get_state())
     time.sleep(0.05)
 
 def start():
