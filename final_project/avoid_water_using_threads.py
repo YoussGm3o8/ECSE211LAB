@@ -29,7 +29,7 @@ def avoid_water_without_threads():
             state = get_state(ENABLES)
             print(state.color_sensor)
             print(state.color_sensor2)
-            if state.color_sensor == "unkown" or state.color_sensor2 == "unkown":
+            if state.color_sensor == "unknown" or state.color_sensor2 == "unknown":
                 nav.stop()
                 time.sleep(0.1)
             if state.color_sensor == "b" or state.color_sensor == "p":

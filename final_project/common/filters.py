@@ -82,7 +82,7 @@ class EMA:
             self.value = self.alpha * value + (1 - self.alpha) * self.value
         return self.value
 
-class diff:
+class Diff:
     def __init__(self, treshold, width, alpha):
         self.treshold = treshold
         self.up = []
@@ -111,3 +111,28 @@ class diff:
                 return True
         return False
 
+class Deriver:
+    def __init__(self, treshold):
+        self.treshold = treshold
+        self.values = []
+
+    def update(self, y, apply_treshold=True):
+        if len(self.values) == 0:
+            self.values.append(y)
+            return None
+        dy = y - self.values[-1]
+        self.values.append(y)
+        if apply_treshold:
+            return self.apply_treshold(dy)
+        return dy
+
+    def reset(self):
+        self.values = []
+
+    def __len__(self):
+        return len(self.values)
+
+    def apply_treshold(self, dy):
+        if -self.treshold < dy < self.treshold:
+            return 0
+        return dy

@@ -268,14 +268,14 @@ def avoid_water():
         if color_sensor_left.fetch() == "b" or color_sensor_left.fetch() == "p":
             nav.forward(-SLOW)
             time.sleep(0.1)
-            nav.turn(SLOW)
+            nav.turn(-SLOW)
             time.sleep(0.05)
             print("right")
             print(color_sensor_left.fetch())
         elif color_sensor_right.fetch() == "b" or color_sensor_right.fetch() == "p":
             nav.forward(-SLOW)
             time.sleep(0.1)
-            nav.turn(-SLOW)
+            nav.turn(SLOW)
             time.sleep(0.05)
             print("left")
             print(color_sensor_right.fetch())

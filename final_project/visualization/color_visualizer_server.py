@@ -1,3 +1,8 @@
+"""
+This script is used to visualize the color sensor data coming from a client script
+"""
+
+
 from communication.server import Server
 import numpy as np
 import matplotlib.pyplot as plt
