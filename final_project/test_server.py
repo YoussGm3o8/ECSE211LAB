@@ -2,9 +2,13 @@ import communication.server as server
 import components.engine as engine
 import matplotlib.pyplot as plt
 import time
+from collections import deque
 import csv
 import os
 import sys
+
+x_points = deque(maxlen=2)
+y_points = deque(maxlen=2)
 
 buffer = []
 if __name__ == "__main__":
@@ -25,9 +29,12 @@ if __name__ == "__main__":
                 plt.pause(0.05)
             elif message[0] == "nav":
                 t = time.time()
-                buffer.append((t, message[1][0], message[1][1]))
-                print(message[1][0])
-                plt.bar(t, message[1][1], color='blue')
+                buffer.append((t, message[1][0], message[1][1], message[1][2]))
+                x_points.append(message[1][2])
+                y_points.append(message[1][0])
+                plt.plot(x_points, y_points, color='blue')
+                if message[1][1]:
+                    plt.axvline(t, color="red")
                 plt.draw()
                 plt.pause(0.05)
             elif message[0] == "row":

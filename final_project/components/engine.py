@@ -38,7 +38,7 @@ from utils.brick import reset_brick
 state = namedtuple("state", ["us_sensor", "color_sensor", "color_sensor2", "g_sensor", "raw_us_sensor"])
 
 global_state = Queue(maxsize=2)
-us_sensor = Filtered_Sensor_V2(rus_sensor, Median_Filter(5))
+us_sensor = Filtered_Sensor_V2(rus_sensor, Median_Filter(5)) #old is 5
 th_engine = threads.ThreadEngine()
 
 def start():
@@ -64,5 +64,6 @@ def poll_sensors():
     """
         for idx look at common/logging.py
     """
-    global_state.put(get_state())
+    s = get_state()
+    global_state.put(s)
     time.sleep(0.05)

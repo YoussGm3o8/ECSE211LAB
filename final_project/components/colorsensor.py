@@ -5,8 +5,8 @@ from data.button1_svm import predict
 import data.button2_svm as button2_svm
 # Constants
 
-COLOR_SENSOR_PORT = 3
-COLOR_SENSOR_PORT2 = 2
+COLOR_SENSOR_PORT = 2
+COLOR_SENSOR_PORT2 = 4
 
 # Components
 
@@ -20,6 +20,7 @@ class Color_Sensor(EV3ColorSensor):
         return f"Color_Sensor(port={self.port})"
 
     def fetch(self):
+        return None
         if self.mode != self.Mode.COMPONENT:
             self.set_mode(self.Mode.COMPONENT)
             self.wait_ready()
@@ -27,15 +28,6 @@ class Color_Sensor(EV3ColorSensor):
         if val is None:
             return None
         return predict(val[:-1])
-
-    # @deprecated(reason="This function is unsafe because it hides None values from caller. Use fetch instead.")
-    def predict(self, value=None):
-        if value is not None:
-            return predict(value)
-        v = self.fetch()
-        while v is None:
-            v = self.fetch()
-        return v
 
     def __iter__(self):
         while True:
@@ -53,6 +45,7 @@ class Color_Sensor2(Color_Sensor):
         super().__init__(port)
 
     def fetch(self):
+        return None
         if self.mode != self.Mode.COMPONENT:
             self.set_mode(self.Mode.COMPONENT)
             self.wait_ready()

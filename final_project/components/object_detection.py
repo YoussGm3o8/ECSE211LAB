@@ -57,7 +57,7 @@ def follow_gradient(client_callback=None):
     The car is supposed to rotate until it detects a cube and oscillate around it
     """
     try:
-        d = Diff(6, 1.5, 0.8)
+        d = Diff(3, 1.5, 0.8)
         speed = nav.SLOW
         nav.turn(speed)
         while True:
@@ -66,13 +66,77 @@ def follow_gradient(client_callback=None):
             if state.us_sensor is None:
                 continue
             val = d.update(time.time(), state.us_sensor)
+            if val:
+                print(d.down[-1][1])
+
+            if val and d.down[-1][1] < 50:
+                speed *= -1
+                nav.turn(speed)
+
+            if client_callback is not None:
+                client_callback(("nav", (state.raw_us_sensor, val)))
+    finally:
+        engine.end()
+
+def follow_gradient_ranged_v2(treshold=40, client_callback=None):
+    """
+    The car is supposed to rotate until it detects a cube and oscillate around it
+    """
+    try:
+        d = Diff(3, 30, 0.8)
+        speed = 140
+        nav.turn(speed)
+        while True:
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            if state.g_sensor is None:
+                continue
+            us_v = state.us_sensor if state.us_sensor < treshold else treshold
+            t = state.g_sensor
+            print(t)
+            val = d.update(t, us_v)
+            if val:
+                print(d.down[-1][1])
 
             if val:
                 speed *= -1
                 nav.turn(speed)
 
             if client_callback is not None:
-                client_callback(("nav", (state.us_sensor, val)))
+                client_callback(("nav", (us_v, val, t)))
+
+            time.sleep(0.05)
+    finally:
+        engine.end()
+
+def follow_gradient_ranged(treshold=40, client_callback=None):
+    """
+    The car is supposed to rotate until it detects a cube and oscillate around it
+    """
+    try:
+        d = Diff(3, 1, 0.8)
+        speed = 140
+        nav.turn(speed)
+        ti = time.time()
+        while True:
+            state = engine.get_state()
+            if state.us_sensor is None:
+                continue
+            if state.g_sensor is None:
+                continue
+            us_v = state.us_sensor if state.us_sensor < treshold else treshold
+            t = time.time()
+            val = d.update(t, us_v)
+            if val:
+                print(d.down[-1][1])
+                speed *= -1
+                nav.turn(speed)
+
+            if client_callback is not None:
+                client_callback(("nav", (us_v, val, t)))
+
+            time.sleep(0.05)
     finally:
         engine.end()
 
