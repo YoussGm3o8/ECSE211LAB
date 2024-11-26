@@ -1,115 +1,86 @@
-"""
-main.py
-
-DESCRIPTION: A robot that avoids wall and water
-"""
-from utils.brick import reset_brick
+import components.engine as engine
+from common.filters import Delta
+from components.navigation import nav
 import time
-from components.gyrosensor import g_sensor
-import components.navigation as nav
-from components.ultrasonic import us_sensor
-from components.colorsensor import color_sensor
-from common.wrappers import Filtered_Sensor
-from common.filters import Median_Filter
-
-#CONSTANTS
-
-TIMEOUT = 10
-
-SLOW = 90
-MODERATE = 180
-FAST = 360
-
-#apply median filter to sensor with a window of 10
-us_sensor = Filtered_Sensor(us_sensor, Median_Filter(10))
-#NOTE: the other sensors are called g_sensor and color_sensor (they are already initialized)
+from communication.client import Client
+from collections import namedtuple
 
 
+FSM_state = namedtuple("FSM_state", ["state", "arguments"])
 
-#TIMEOUT function
-def wait_for(func, *args):
-    if not callable(func):
-        raise TypeError("func must be a function")
-    ti = time.time()
-    v = func(*args)
-    while v is None:
-        v = func(*args)
-        if time.time() - ti > TIMEOUT:
-            if hasattr(func, '__self__'):
-                #this if for debugging purposes
-                myclass = func.__self__
-                raise TimeoutError(str(myclass)+" not responding...")
-            raise TimeoutError("Component not responding...")
-    return v
-
-#MAIN LOOP
-try:
+def forward_listen(FSM, args):
+    print("forward_listen")
+    nav.forward(nav.SLOW)
     while True:
-        speed = FAST
-        nav.forward(speed)
+        state = engine.get_state()
+
+        if state.us_sensor is None:
+            continue #may be problematic (no sleep)
+
+        if state.us_sensor < 5:
+            return FSM_state("near_object", None)
+
+        val = FSM.delt.get(state.us_sensor)
+
+        if val > 5:
+            return FSM_state("refocus", val)
+        time.sleep(0.05)
+        if FSM.client is not None:
+            FSM.client.send(FSM_state("forward_listen", state))
+
+def near_object(FSM, args):
+    print("near_object")
+    return FSM_state("end", None)
+
+def refocus(FSM, args):
+    print("refocus")
+    speed = -nav.SLOW
+    nav.turn(speed)
+    while True:
+        state = engine.get_state()
+        if state.us_sensor is None:
+            continue
+        val = FSM.delt.get(state.us_sensor)
+
+        if val < -5:
+            return FSM_state("forward_listen", None)
+
+        if FSM.client is not None:
+            FSM.client.send(FSM_state("refocus", state))
+
+        time.sleep(0.05)
+
+class FiniteStateMachine:
+    def __init__(self, initial_state, states={
+        "forward_listen": forward_listen,
+        "end": None,
+        "near_object": near_object,
+        "refocus": refocus
+    }):
+        self.goal = None
+        self.states_dict = states
+        self.current = FSM_state(initial_state, None)
+
+    def start(self):
+        print("start")
         while True:
-
-            #DISTANCE
-            dist = us_sensor.fetch()
-            if dist is None:
-                print("dist is None")
-                nav.stop()
-                dist = wait_for(us_sensor.fetch)
-                nav.forward(speed)
-                print("dist is not None")
-
-            if dist < 30:
+            if self.current.state == "end":
                 break
+            self.current = self.states_dict[self.current.state](self, self.current.arguments) #may want to use get() instead of []
 
-            #COLOR
-            color = color_sensor.fetch()
-            if color is None:
-                print("color None")
-                nav.stop()
-                color = wait_for(color_sensor.fetch)
-                nav.forward(speed)
-                print("color not None")
 
-            if color == 'b':
-                print("color is b")
-                nav.stop()
-                g_sensor.reset_measure()
-                nav.turn(SLOW)
-                print(g_sensor.fetch(), "is 0")
+    def end():
+        print("end")
+        engine.end()
 
-                while True:
-                    angle = g_sensor.fetch()
-                    if angle is None:
-                        nav.stop()
-                        angle = wait_for(g_sensor.fetch)
-                        nav.turn(SLOW)
-                        print(angle)
-                    if abs(angle) > 89:
-                        nav.stop()
-                        break
+if __name__ == "__main__":
+    FSM = FiniteStateMachine()
+    #initialize the components
+    FSM.delt = Delta()
+    FSM.client = Client()
+    try:
+        FSM.start()
+    finally:
+        FSM.end()
+        FSM.client.exit()
 
-        #at this point the car is near something
-        nav.stop()
-        #turn 90 degrees
-        g_sensor.reset_measure()
-        nav.turn(SLOW)
-        while True:
-            dist = us_sensor.fetch()
-            if dist is None:
-                print("dist None")
-                nav.stop()
-                dist = wait_for(us_sensor.fetch)
-                nav.turn(SLOW)
-                print("dist not None")
-
-            angle = g_sensor.fetch()
-            if angle is None:
-                nav.stop()
-                angle = wait_for(g_sensor.fetch)
-                nav.turn(SLOW)
-            if abs(angle) > 89 and dist > 40:
-                nav.stop()
-                break
-
-finally:
-    reset_brick()

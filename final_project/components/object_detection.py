@@ -1,7 +1,7 @@
 import components.navigation as nav
 import statistics as stat
 import components.engine as engine
-from common.filters import Diff, Deriver, Exponential_Moving_Average, Convolution, SquareWave
+from common.filters import Diff, Deriver, Exponential_Moving_Average, Convolution, SquareWave, Delta
 import time
 import communication.client as client
 

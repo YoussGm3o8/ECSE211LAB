@@ -173,15 +173,14 @@ class SquareWave(Kernel):
             res += -0.5*window[i] + window[i+self.w] - 0.5*window[i+2*self.w]
         return res * self.factor
 
+class Delta:
+    def __init__(self):
+        self.prev = None
 
-class US_Sensor_High_PollingRate:
-    def __init__(self, sensor):
-        self.sensor = sensor
-        self.last = None
-    
-    def fetch(self):
-        current = self.sensor.fetch()
-        if current != self.last:
-            self.last = current
-            return current
-        return None
+    def get(self, value):
+        if self.prev is None:
+            self.prev = value
+            return 0
+        d = value - self.prev
+        self.prev = value
+        return d

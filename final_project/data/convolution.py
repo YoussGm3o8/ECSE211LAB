@@ -1,11 +1,45 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from collections import deque
+import statistics as stat
 
+class Filter:
+    def __init__(self, func, buffer_length):
+        self.buffer = deque(maxlen=buffer_length)
+        self.func = func
+
+    def update(self, value):
+        """
+        Update the buffer with the new value and returns the [func] of the buffer if full.
+
+        NOTE: if the buffer is not full, the [func] is calculated based on the available values.
+
+        *ASSUMES THAT VALUES ARE NOT NONE
+        """
+        self.buffer.append(value)
+        return self.func(self.buffer)
+
+    def extend(self, values):
+        self.buffer.extend(values)
+        return self.func(self.buffer)
+
+    def isReady(self):
+        return len(self.buffer) == self.buffer.maxlen
+
+    def __len__(self):
+        return len(self.buffer)
+
+
+class Median_Filter(Filter):
+    def __init__(self, buffer_length):
+        super().__init__(lambda x : stat.median(x), buffer_length)
 
 data_path = os.path.join(os.path.dirname(__file__), 'csv')
-path = os.path.join(data_path, 'us_data3.csv')
+# path = os.path.join(data_path, 'us_data3.csv')
+path = os.path.join(data_path, 'rotate_around2.csv')
 data = np.genfromtxt(path, delimiter=',', skip_header=1)
+data = data[:, 0:2]
 y_prev = None
 new_data = []
 for x, y in data:
@@ -13,6 +47,8 @@ for x, y in data:
         new_data.append([x, y])
         y_prev = y
 old_data = data
+med = Median_Filter(5)
+data = [(d[0], med.update(d[1])) for d in new_data]
 data = np.array(new_data)
 
 dif = np.diff(data[:, 1])
@@ -79,9 +115,9 @@ for d in detected:
     if d == 0:
         continue
     # plt.axvline(x=d, color='r', linestyle='--')
-plt.plot(x[1:], dif_clip, label='derivative')
+# plt.plot(x[1:], dif_clip, label='derivative')
 plt.plot(x, y, label='Original')
-# plt.plot(x, data_haar, label='Haar')
+plt.plot(x, data_haar, label='Haar')
 # plt.plot(x, data_haar_wide, label='Haar')
 plt.plot(old_data[:, 0], old_data[:, 1], label='Filtered')
 plt.plot(x, mean, label='Mean')
