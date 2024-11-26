@@ -12,7 +12,7 @@ if __name__ == "__main__":
     if sys.argv[1] == "--scan":
         scan(client_callback=cl.send)
     if sys.argv[1] == "--nav":
-        follow_gradient_ranged_v2(40, cl.send)
+        follow_gradient_ranged(40, cl.send)
     elif sys.argv[1] == "--test":
         try:
             while True:

@@ -31,6 +31,53 @@ def forward_listen(FSM, args):
         if FSM.client is not None:
             FSM.client.send(FSM_state("forward_listen", state.us_sensor))
 
+def forward_listen_v2(FSM, args):
+    print("forward_listen")
+    nav.forward(nav.SLOW)
+    last = None
+    while True:
+        state = engine.get_state()
+        if state.us_sensor is None:
+            continue #may be problematic (no sleep)
+
+        if state.us_sensor < 10:
+            return FSM_state("near_object", None)
+        if last is None:
+            last = state.us_sensor
+            continue
+        val = FSM.delt.get(state.us_sensor)
+
+        if val > 10:
+            return FSM_state("refocus", (state.us_sensor, val))
+        time.sleep(0.05)
+        if FSM.client is not None:
+            FSM.client.send(FSM_state("forward_listen", state.us_sensor))
+
+def refocus_v3(FSM, args):
+    nav.turn(90)
+    dist_of_obj = -(args[1] - args[0])
+    for _ in range(20):
+        state  = engine.get_state()
+        val = FSM.delt.get(state.us_sensor)
+        if (dist_of_obj *0.8 < state.us_sensor < dist_of_obj * 1.2):
+            return FSM_state("forward_listen", None)
+        time.sleep(0.05)
+        if FSM.client is not None:
+            FSM.client.send(FSM_state("refocus", state.us_sensor))
+
+    nav.turn(-90)
+    for _ in range(40):
+        state  = engine.get_state()
+        val = FSM.delt.get(state.us_sensor)
+        if (dist_of_obj *0.8 < state.us_sensor < dist_of_obj * 1.2):
+            return FSM_state("forward_listen", None)
+        time.sleep(0.05)
+        if FSM.client is not None:
+            FSM.client.send(FSM_state("refocus", state.us_sensor))
+    return FSM_state("forward_listen", None)
+
+
+
 def near_object(FSM, args):
     print("near_object")
     return FSM_state("end", None)
@@ -61,11 +108,12 @@ def follow_gradient_ranged(treshold=40, client_callback=None):
         val = d.update(t, us_v)
         if val:
             dist = d.down[-1][0]
-            print(dist)
-            nav.turn(-speed)
-            while (dist - 3 < state.us_sensor < dist + 3):
-                continue
-            nav.stop()
+            return dist
+            # print(dist)
+            # nav.turn(-speed)
+            # while (dist - 3 < state.us_sensor < dist + 3):
+            #     continue
+            # nav.stop()
             return
 
         time.sleep(0.05)
@@ -98,10 +146,10 @@ def refocus(FSM, args):
 
 class FiniteStateMachine:
     def __init__(self, initial_state, states={
-        "forward_listen": forward_listen,
+        "forward_listen": forward_listen_v2,
         "end": None,
         "near_object": near_object,
-        "refocus": refocus
+        "refocus": refocus_v3
     }):
         self.delt = Delta()
         self.client = Client()
