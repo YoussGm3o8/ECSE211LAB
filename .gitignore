@@ -1,1 +1,6 @@
 .vscode
+final_project/common/__pycache__
+final_project/communication/__pycache__
+final_project/components/__pycache__
+final_project/data/__pycache__
+final_project/utils/__pycache__
