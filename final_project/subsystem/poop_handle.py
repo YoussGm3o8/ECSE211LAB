@@ -37,6 +37,9 @@ class Poop_Actions():
 
     def set_arm_to_angle(self, target_angle, dps):
         self.set_motor_to_angle(-target_angle, dps, self.arm, self.offset_arm_angle)
+    
+    def reset_arm_position(self):
+        self.arm.reset_position()
 
     def set_dumb_to_angle(self, target_angle, dps):
         self.set_motor_to_angle(target_angle, dps, self.dumb, self.offset_dumb_angle)

@@ -1,5 +1,8 @@
 import time
 
+from common.wrappers import Filtered_Sensor
+from common.filters import Median_Filter
+
 from components.gyrosensor import GYRO_Sensor
 from components.ultrasonic import US_Sensor
 from components.colorsensor import Color_Sensor, Color_Sensor2
@@ -15,7 +18,7 @@ class Poop_Scooper():
         self.arm = Motor(ARM_PORT)
         self.dumb = Motor(DUMB_PORT)
         self.g_sensor = GYRO_Sensor(GYRO_PORT)
-        self.us_sensor = US_Sensor(US_PORT)
+        self.us_sensor = Filtered_Sensor(US_Sensor(US_PORT), Median_Filter(5))
         self.wheel_left = Motor(LEFT_WHEEL_PORT)
         self.wheel_right = Motor(RIGHT_WHEEL_PORT)
         self.color_sensor = Color_Sensor(COLOR_SENSOR)
@@ -55,6 +58,8 @@ class Poop_Scooper():
             self.arm.set_dps(VERY_SLOW)
         self.arm.set_dps(0)
         self.dumb.set_dps(0)
+        self.arm.reset_position()
+        self.dumb.reset_position()
         self.g_sensor.reset()
         self.color_sensor.fetch()
         self.color_sensor_sticker.fetch()
@@ -68,13 +73,12 @@ class Poop_Scooper():
         # time.sleep(1.5)
         # self.my_poop_picker.set_dumb_to_angle( 2, VERY_FAST)
         # time.sleep(1)
-        self.my_car.reverse(VERY_FAST, 30)
-        self.traversal.check_lane()
-        # self.my_car.forward(VERY_FAST, 30)
-        # self.my_car.reverse(VERY_FAST, 30)
-        # self.my_car.forward_until_distance(VERY_FAST, 30)
-        # self.my_car.turn_left(VERY_FAST, 90)
-        # self.my_car.turn_right(VERY_FAST, 90)
+        direction = 1
+        for i in range(6):
+            direction = direction * -1
+            self.traversal.check_lane(direction)
+            self.my_car.forward(FAST, 20)
+            self.my_car.turn_left(FAST, 90 * direction)
     
     def taking_meaurements(self): # for debugging please ignore
         while True:

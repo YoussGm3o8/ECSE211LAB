@@ -11,16 +11,17 @@ class Traversal():
         self.us_sensor = us_sensor,
         self.debug = debug
 
-    def check_lane(self):
-        self.car.forward_until_distance(VERY_FAST, CHECK_WALL_DISTANCE)
+    def check_lane(self, direction):
+        self.car.forward_until_distance(FAST, CHECK_WALL_DISTANCE)
 
         if self.is_wall():
             print("IT is a wall")
-            self.car.turn_left(FASTER, 180)
+            self.car.turn_left(FASTER, 90 * direction)
 
     def is_wall(self):
         start_time = time.time()
         self.poop_picker.set_arm_to_angle(220, FASTER)
+        time.sleep(1) # wait for arm to stabilize
         while time.time() - start_time < WALL_CHECK_TIME:
             if self.is_wall_color():
                 self.poop_picker.set_arm_to_angle(0, FASTER)
@@ -31,9 +32,10 @@ class Traversal():
     def is_wall_color(self):
         color = self.color_sensor.fetch()
         color_sticker = self.color_sensor_sticker.fetch()
+        print(f"color {color} sticker_color {color_sticker}")
         if self.debug:
                 print(f"color {color} stciker_color {color_sticker}")
-        return color == 'w' or color_sticker == 'w'
+        return color == 'w' # or color_sticker == 'w'
 
 
 #I don't know why we would need threading or if its advantageous to use it in this case
