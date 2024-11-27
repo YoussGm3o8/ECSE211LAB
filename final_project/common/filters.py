@@ -18,6 +18,9 @@ class Filter:
         self.buffer.append(value)
         return self.func(self.buffer)
 
+    def clear(self):
+        self.buffer.clear()
+
     def extend(self, values : Iterable):
         self.buffer.extend(values)
         return self.func(self.buffer)

@@ -103,6 +103,7 @@ class Car():
 
     def keep_angle_at(self, angle, distance_thresholds, remaining_distance): # might be used for making turns
         read_angle = self.g_sensor.fetch()
+        self.cur_angle = read_angle
         angle_diff = read_angle - angle
         for threshold, left_dps, right_dps in distance_thresholds:
             if remaining_distance > threshold:

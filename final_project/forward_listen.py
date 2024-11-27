@@ -1,179 +1,92 @@
-import components.engine as engine
-from common.filters import Delta, Diff
-import components.navigation as nav
+from common.filters import Diff, Median_Filter
 import time
 from communication.client import Client
 from collections import namedtuple
+from components.gyrosensor import GYRO_Sensor
+from components.ultrasonic import US_Sensor
+from common.constants_params import *
+from subsystem.car import Car
+from utils.brick import Motor, reset_brick
 
+median = Median_Filter(5)
 
-FSM_state = namedtuple("FSM_state", ["state", "arguments"])
+def scan_for_objects(car, degree, direction=1):
+    assert(isinstance(car, Car))
+    scan = Diff(5, 30, 0.7)
+    # d = Diff(2.5, 20, 0.7) #ideally we change these parameters for each distances (close, medium, far)
+    # d2 = Diff(5, 50, 1) #ideally we change these parameters for each distances (close, medium, far)
+    car.wheel_left.set_dps(SLOW * direction)
+    car.wheel_right.set_dps(-SLOW * direction)
+    initial_angle = car.g_sensor.fetch()
 
-def forward_listen(FSM, args):
-    print("forward_listen")
-    nav.forward(nav.SLOW)
-    memory = None
-    last = None
     while True:
-        state = engine.get_state()
-        if state.us_sensor is None:
-            continue #may be problematic (no sleep)
-
-        if state.us_sensor < 10:
-            return FSM_state("near_object", None)
-        if last is None:
-            last = state.us_sensor
-            continue
-        val = FSM.delt.get(state.us_sensor)
-
-        if val > 10:
-            return FSM_state("refocus", val)
+        current_angle = car.g_sensor.fetch()
+        if abs(initial_angle - current_angle) > degree:
+            car.stop()
+            return False
+        distance = median.update(car.us_sensor.fetch())
+        if scan.update(current_angle, distance):
+            car.wheel_left.set_dps(-SLOW * direction)
+            car.wheel_right.set_dps(SLOW * direction)
+            target_angle = scan.down[-1][0]
+            while abs(target_angle - current_angle) > 5: #change this so that instead of abs distance we have the signed distance
+                time.sleep(0.05)
+                current_angle = car.g_sensor.fetch()
+            car.stop()
+            return True
         time.sleep(0.05)
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("forward_listen", state.us_sensor))
-
-def forward_listen_v2(FSM, args):
-    print("forward_listen")
-    nav.forward(nav.SLOW)
-    last = None
-    while True:
-        state = engine.get_state()
-        if state.us_sensor is None:
-            continue #may be problematic (no sleep)
-
-        if state.us_sensor < 10:
-            return FSM_state("near_object", None)
-        if last is None:
-            last = state.us_sensor
-            continue
-        val = FSM.delt.get(state.us_sensor)
-
-        if val > 10:
-            return FSM_state("refocus", (state.us_sensor, val))
-        time.sleep(0.05)
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("forward_listen", state.us_sensor))
-
-def refocus_v3(FSM, args):
-    nav.turn(90)
-    dist_of_obj = -(args[1] - args[0])
-    for _ in range(20):
-        state  = engine.get_state()
-        val = FSM.delt.get(state.us_sensor)
-        if (dist_of_obj *0.8 < state.us_sensor < dist_of_obj * 1.2):
-            return FSM_state("forward_listen", None)
-        time.sleep(0.05)
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("refocus", state.us_sensor))
-
-    nav.turn(-90)
-    for _ in range(40):
-        state  = engine.get_state()
-        val = FSM.delt.get(state.us_sensor)
-        if (dist_of_obj *0.8 < state.us_sensor < dist_of_obj * 1.2):
-            return FSM_state("forward_listen", None)
-        time.sleep(0.05)
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("refocus", state.us_sensor))
-    return FSM_state("forward_listen", None)
 
 
-
-def near_object(FSM, args):
-    print("near_object")
-    return FSM_state("end", None)
-
-def follow_gradient_ranged(treshold=40, client_callback=None):
+def forward_listen(car, dps, distance_treshold, target_angle=None, client_callback=None):
     """
-    The car is supposed to rotate until it detects a cube and oscillate around it
+    Move forward until the distance jumps by 10 cm (an object has moved from the sensor).
+    ADJUSTMENTS: The car keeps moving ifs that object was 40+ cm away from the sensor (in theory the car shouldn't hit it).
     """
-    d = Diff(3, 1.5, 0.8)
-    speed = 150
-    nav.turn(speed)
-    ti = time.time()
-    state = engine.get_state()
-    while True:
-        # if time.time() - ti > 5:
-        #     print("couldnt locate object")
-        #     nav.turn(-speed)
-        #     time.sleep(5)
-        #     nav.stop()
-        #     return None
-        state = engine.get_state()
-        if state.us_sensor is None:
-            continue
-        if state.g_sensor is None:
-            continue
-        t = time.time()
-        us_v = state.us_sensor if state.us_sensor < treshold else treshold
-        val = d.update(t, us_v)
-        if val:
-            dist = d.down[-1][0]
-            return dist
-            # print(dist)
-            # nav.turn(-speed)
-            # while (dist - 3 < state.us_sensor < dist + 3):
-            #     continue
-            # nav.stop()
-            return
-
+    assert(isinstance(car, Car))
+    median.clear()
+    last_dist = median.update(Car.us_sensor.fetch())
+    if target_angle is None:
+        target_angle = car.g_sensor.fetch()
+    while last_dist > 10:
+        car.keep_angle_at(target_angle, [0, dps, dps], 1)
+        current_dist = median.update(Car.us_sensor.fetch())
+        diff = current_dist - last_dist
+        if current_dist < distance_treshold and diff > 10:
+            car.stop()
+            return last_dist, target_angle
+        last_dist = current_dist
         time.sleep(0.05)
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("refocus", us_v))
+        if client_callback is not None:
+            client_callback(("forward_listen", (car.cur_angle, current_dist)))
+    return None
 
 
-def refocus_v2(FSM, args):
-    follow_gradient_ranged()
-    return FSM_state("forward_listen", None)
-
-
-def refocus(FSM, args):
-    print("refocus")
-    speed = nav.SLOW
-    nav.turn(speed)
-    while True:
-        state = engine.get_state()
-        if state.us_sensor is None:
-            continue
-        val = FSM.delt.get(state.us_sensor)
-
-        if val < -10:
-            return FSM_state("forward_listen", None)
-
-        if FSM.client is not None:
-            FSM.client.send(FSM_state("refocus", state.us_sensor))
-
-        time.sleep(0.05)
-
-class FiniteStateMachine:
-    def __init__(self, initial_state, states={
-        "forward_listen": forward_listen_v2,
-        "end": None,
-        "near_object": near_object,
-        "refocus": refocus_v3
-    }):
-        self.delt = Delta()
-        self.client = Client()
-        self.goal = None
-        self.states_dict = states
-        self.current = FSM_state(initial_state, None)
-
-    def start(self):
-        print("start")
-        while True:
-            if self.current.state == "end":
-                break
-            self.current = self.states_dict[self.current.state](self, self.current.arguments) #may want to use get() instead of []
-
-
-    def end(self, *args):
-        print("end")
-        engine.end()
+def refocus(car, dps, target_distance, distance_treshold):
+    """rotate the car very slightly to make adjustments with the disappearing object"""
+    assert(isinstance(car, Car))
+    car.turn_left(dps, 5)
+    if  target_distance - distance_treshold < car.us_sensor.fetch() < target_distance + distance_treshold:
+        return True
+    car.turn_right(dps, 10)
+    if  target_distance - distance_treshold < car.us_sensor.fetch() < target_distance + distance_treshold:
+        return True
+    car.turn_left(dps, 5)
+    return False
 
 if __name__ == "__main__":
-    FSM = FiniteStateMachine("forward_listen")
-    #initialize the components
+    cl = Client()
     try:
-        FSM.start()
+        car = Car(GYRO_Sensor(GYRO_PORT), US_Sensor(US_PORT), None, None, Motor(LEFT_WHEEL_PORT), Motor(RIGHT_WHEEL_PORT), True)
+        res = -1
+        target_angle = None
+        while True:
+            res, target_angle = forward_listen(car, 180, 40, target_angle, cl.send)
+            if res is None:
+                break
+            target = refocus(car, 140, res, 7)
+            if target == True:
+                target_angle = None #reset the target angle
+        
     finally:
-        FSM.end()
-        FSM.client.exit()
+        car.stop()
+        reset_brick()
