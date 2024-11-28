@@ -20,11 +20,9 @@ try:
                 input("Press Enter to continue...")
                 car.previous_action()
 
-            car.fix_angle(angle)
+            # car.fix_angle(angle)
             car.update()
             time.sleep(0.05)
-        car.reverse(MODERATE, 10)
-        car.wait_for_action()
         if direction == 1:
             car.turn_left(MODERATE, 50)
             car.wait_for_action()
@@ -38,7 +36,7 @@ try:
             time.sleep(0.05)
             car.update()
             car.avoid_water()
-            car.fix_angle(angle)
+            # car.fix_angle(angle)
 
         if direction == 1:
             car.turn_left(MODERATE, 50)

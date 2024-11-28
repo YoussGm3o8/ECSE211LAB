@@ -1,30 +1,24 @@
 import time
-from components.gyrosensor import GYRO_Sensor
 from components.ultrasonic import US_Sensor
 from components.colorsensor import Color_Sensor, Color_Sensor2
 from utils.brick import Motor, reset_brick
 from common.constants_params import *
 
 class Car():
-    def __init__(self, us_sensor=US_Sensor(US_PORT), us_sensor_2=US_Sensor(US_PORT_2),
-            color_sensor=Color_Sensor(COLOR_SENSOR), color_sensor_sticker=Color_Sensor2(COLOR_SENSOR_STICKER),
-            wheel_left=Motor(LEFT_WHEEL_PORT), wheel_right=Motor(RIGHT_WHEEL_PORT), debug=True):
-        assert(isinstance(us_sensor, US_Sensor))
-        assert(isinstance(us_sensor_2, US_Sensor))
-        assert(isinstance(color_sensor, Color_Sensor))
-        assert(isinstance(color_sensor_sticker, Color_Sensor2))
-        assert(isinstance(wheel_left, Motor))
-        assert(isinstance(wheel_right, Motor))
+    """
+    left wheel 186
+    right wheel 180
+    """
+    def __init__(self, debug=True):
 
-        self.us_sensor = us_sensor
-        self.us_sensor_2 = us_sensor_2
-        self.wheel_left = wheel_left
-        self.wheel_right = wheel_right
-        self.left_color_sensor = color_sensor
-        self.right_color_sensor = color_sensor_sticker
+        self.us_sensor = US_Sensor(US_PORT)
+        self.us_sensor_2 = US_Sensor(US_PORT_2)
+        self.wheel_left = Motor(LEFT_WHEEL_PORT)
+        self.wheel_right = Motor(RIGHT_WHEEL_PORT)
+        self.left_color_sensor = Color_Sensor(COLOR_SENSOR)
+        self.right_color_sensor = Color_Sensor2(COLOR_SENSOR_STICKER)
 
         self.debug = debug
-        self.angle_time = 0
         self.abs_angle_time = 0
 
         self.current_action = (None, None)
@@ -51,8 +45,8 @@ class Car():
         if self.debug:
             print("Moving forward")
         self.is_stopped = False
-        self.wheel_left.set_dps(-dps)
-        self.wheel_right.set_dps(-dps)
+        self.wheel_left.set_dps(dps)
+        self.wheel_right.set_dps(dps)
 
         if distance is not None:
             self.wheel_left.reset_encoder()
@@ -66,7 +60,10 @@ class Car():
     def reverse(self, dps, distance=None):
         if self.debug:
             print("Moving backward")
-        self.forward(-dps, distance)
+        if distance is not None:
+            self.forward(-dps, -distance)
+        else:
+            self.forward(-dps)
 
     def distance_to_encoder_units(self, distance):
         ENCODER_TICKS_PER_REV = 360
@@ -121,7 +118,7 @@ class Car():
     def fix_angle(self, angle_time):
         """call this function to fix the angle of the car with the target angle"""
         if self.debug:
-            print("Fixing angle, abs_angle_time: ", self.abs_angle_time, "angle_time: ", self.angle_time)
+            print("Fixing angle, abs_angle_time: ", self.abs_angle_time, "angle_time: ", self.target_time)
         if self.clock % 2 == 0:
             self.fix_memory = (self.current_action, self.get_distance_remaining())
             if self.abs_angle_time > angle_time:
@@ -150,23 +147,37 @@ class Car():
 
     def update(self):
         self.clock += 1
-        if self.target_distance is not None:
-            left_distance = -self.encoder_units_to_distance(self.wheel_left.get_encoder())
-            right_distance = -self.encoder_units_to_distance(self.wheel_right.get_encoder())
-            if (left_distance > right_distance):
-                self.correction = 10
-            elif (left_distance < right_distance):
-                self.correction = -10
-            else:
-                self.correction = 0
-            average_distance = (left_distance + right_distance) / 2
-            if average_distance > self.target_distance:
-                self.stop()
+        if self.current_action[0] == "forward":
+            if self.target_distance is not None:
+                left_distance = self.encoder_units_to_distance(self.wheel_left.get_encoder())
+                right_distance = self.encoder_units_to_distance(self.wheel_right.get_encoder())
+                if (left_distance > right_distance):
+                    self.correction = 10
+                    print("left biased")
+                elif (left_distance < right_distance):
+                    self.correction = -10
+                    print("right biased")
+                else:
+                    self.correction = 0
+                average_distance = (left_distance + right_distance) / 2
+                if self.current_action[1] is None:
+                    self.stop()
+                else:
+                    if self.current_action[1] > 0:
+                        if average_distance > self.target_distance:
+                            self.stop()
+                    elif self.current_action[1] < 0:
+                        if average_distance < self.target_distance:
+                            self.stop()
+                    else:
+                        self.stop()
 
         if self.current_action[0] == "turn":
-            self.abs_angle_time += self.current_action[1]
+            if self.current_action[1] is not None:
+                self.abs_angle_time += self.current_action[1]
             if self.target_time is not None:
-                if (self.target_time - self.abs_angle_time) * self.current_action[1] <= 0:
+                print(self.target_time, self.abs_angle_time)
+                if (self.target_time - self.abs_angle_time) * self.current_action[1] >= 0:
                     self.stop()
 
     def is_water(self):
@@ -186,7 +197,7 @@ class Car():
         return c1_f, c2_f
 
     def wait_for_action(self):
-        while self.is_stopped == False:
+        while not self.is_stopped:
             time.sleep(0.05)
             self.update()
 
@@ -198,7 +209,10 @@ class Car():
                 self.forward(self.current_action[1], kargs["target_distance"])
         elif self.current_action[0] == "turn":
             if kargs.get("target_time") is None:
-                self.turn(self.current_action[1], self.target_time - self.abs_angle_time)
+                if self.target_time is not None:
+                    self.turn(self.current_action[1], self.target_time - self.abs_angle_time)
+                else:
+                    self.turn(self.current_action[1])
             else:
                 self.turn(self.current_action[1], kargs["target_time"]) 
 
@@ -211,7 +225,10 @@ class Car():
 
         if flags[0] and flags[1]:
             td = self.get_distance_remaining()
-            tt = self.target_time - self.abs_angle_time
+            if self.target_time is not None:
+                tt = self.target_time - self.abs_angle_time
+            else:
+                tt = None
             self.reverse(MODERATE, 5)
             self.wait_for_action()
             self.turn_left(MODERATE, 10)
@@ -222,7 +239,10 @@ class Car():
         elif flags[0]:
             td = self.get_distance_remaining()
             speed = self.wheel_left.get_speed()
-            tt = self.target_time - self.abs_angle_time
+            if self.target_time is not None:
+                tt = self.target_time - self.abs_angle_time
+            else:
+                tt = None
             self.turn_right(speed, max_correction)
             while True:
                 time.sleep(0.05)
@@ -232,8 +252,11 @@ class Car():
             self.previous_action(target_distance=td, target_time=tt)
         elif flags[1]:
             speed = self.wheel_left.get_speed()
+            if self.target_time is not None:
+                tt = self.target_time - self.abs_angle_time
+            else:
+                tt = None
             td = self.get_distance_remaining()
-            tt = self.target_time- self.abs_angle_time
             self.turn_left(speed, max_correction)
             while True:
                 time.sleep(0.05)
@@ -254,14 +277,76 @@ class Car():
             us2 = self.us_sensor_2.fetch()
 
         if us1 < treshold or us2 < treshold:
-            return True
+            return us1, us2
+        return None
 
     def which_us_sensor(self, treshold=10):
         s1_f = False
         s2_f = False
-        if self.us_sensor.fetch() < treshold:
-            s1_f = True
-        if self.us_sensor_2.fetch() < treshold:
-            s2_f = True
+
+        val = self.us_sensor_2.fetch()
+        if val is not None:
+            if val < treshold:
+                s2_f = True
+
+        val = self.us_sensor.fetch()
+        if val is not None:
+            if val < treshold:
+                s1_f = True
         return s1_f, s2_f
+    
+    def get_us_tuple(self):
+        val = self.us_sensor.fetch()
+        val2 = self.us_sensor_2.fetch()
+        if val is None or val2 is None:
+            return None
+        return val, val2
+
+    def scan(self, treshold=8, treshold2=4):
+        tup = self.get_us_tuple()
+        if tup is not None:
+            if min(tup) < treshold:
+                self.forward(50, 4)
+                while not self.is_stopped:
+                    self.update()
+                    time.sleep(0.05)
+                tup = self.get_us_tuple()
+                if tup is not None:
+                    if tup[0] < treshold2:
+                        self.stop()
+                        return "left_c"
+                    if tup[1] < treshold:
+                        self.stop()
+                        return "right_c"
+                    self.turn_left(50, 10)
+                    while not self.is_stopped:
+                        time.sleep(0.05)
+                        tup = self.get_us_tuple()
+
+                        if tup is not None:
+                            if tup[0] < treshold2:
+                                self.stop()
+                                return "left_c"
+                            if tup[1] < treshold:
+                                self.stop()
+                                return "right_c"
+                        self.update()
+                    self.turn_right(50, 20)
+                    while not self.is_stopped:
+                        time.sleep(0.05)
+                        tup = self.get_us_tuple()
+
+                        if tup is not None:
+                            if tup[0] < treshold2:
+                                self.stop()
+                                return "left_c"
+                            if tup[1] < treshold:
+                                self.stop()
+                                return "right_c"
+                        self.update()
+        return None
+
             
+
+
+

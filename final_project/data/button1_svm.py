@@ -53,27 +53,29 @@ def normalize(pixel):
 
 
 def predict(pixel):
-    
+
+    str = ""   
+    if is_unknown(pixel):
+        str = "u"
+
     pixel = normalize(pixel)
-    # if is_unknown(pixel):
-    #     return 'unknown'
 
     if project(pixel, weights[0][0], weights[0][1]):
         if project(pixel, weights[1][0], weights[1][1]):
-            return 'g'
+            return str+'g'
         else:
-            return 'b'
+            return str+'b'
     else:
         if not project(pixel, weights[2][0], weights[2][1]):
             if not project(pixel, weights[3][0], weights[3][1]):
-                return 'w'
+                return str+'w'
             else:
-                return 'p'
+                return str+'p'
         else:
             if not project(pixel, weights[4][0], weights[4][1]):
-                return 'y'
+                return str+'y'
             else:
                 if not project(pixel, weights[5][0], weights[5][1]):
-                    return 'r'
+                    return str+'r'
                 else:
-                    return 'o'
+                    return str+'o'
