@@ -1,7 +1,4 @@
 import communication.server as server
-import components.engine as engine
-from components.engine import state
-from main import FSM_state
 import matplotlib.pyplot as plt
 import sys
 from collections import deque
@@ -10,17 +7,17 @@ import numpy as np
 
 xs = deque(maxlen=2)
 ys = deque(maxlen=2)
-
+ser = None
 if len(sys.argv) != 2:
     print("Usage: python main_server.py <test name>")
     sys.exit(1)
 try:
-    server = server.Server()
+    ser = server.Server()
     color = {"forward_listen":"red", "refocus":"blue"}
-    for message in server:
+    for message in ser:
         print(message[0], message)
         x = message[1][0]
-        y = message[1][0]
+        y = message[1][1]
         xs.append(x)
         ys.append(y)
 
@@ -28,4 +25,5 @@ try:
         plt.draw()
         plt.pause(0.05)
 finally:
-    server.exit()
+    if ser is not None:
+        ser.exit()

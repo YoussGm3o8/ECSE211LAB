@@ -166,3 +166,21 @@ class Car():
             # (15, -correction_dps * 3 // 5, -correction_dps * 3 // 5),  # 60% of correction speed
         ]
 
+class Car_V2(Car):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+    def keep_angle(self, angle, left_dps, right_dps): # might be used for making turns
+        left_dps *= -1
+        right_dps *= -1
+        read_angle = self.g_sensor.fetch()
+        print(read_angle)
+        self.cur_angle = read_angle
+        angle_diff = read_angle - angle
+        if angle_diff > 0:
+            self.wheel_left.set_dps(left_dps + angle_diff * 10)
+        elif angle_diff < 0:
+            self.wheel_right.set_dps(right_dps - angle_diff * 10)
+        else:
+            self.wheel_left.set_dps(left_dps)
+            self.wheel_right.set_dps(right_dps)
