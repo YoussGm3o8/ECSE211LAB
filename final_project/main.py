@@ -88,5 +88,8 @@ class Poop_Scooper():
 
 if __name__ == "__main__":
     poop = Poop_Scooper()
-    poop.do_something()
+    # poop.do_something()
     # poop.taking_meaurements()
+
+
+
