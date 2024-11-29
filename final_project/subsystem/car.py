@@ -3,6 +3,7 @@ from components.ultrasonic import US_Sensor
 from components.colorsensor import Color_Sensor, Color_Sensor2
 from utils.brick import Motor, reset_brick
 from common.constants_params import *
+from collections import deque
 
 class Car():
     """
@@ -29,6 +30,7 @@ class Car():
         self.fix_memory = None
 
         self.clock = 0
+        self.us_regions = deque(maxlen=3)
 
     def kill(self):
         reset_brick()
@@ -265,7 +267,7 @@ class Car():
                     break
             self.previous_action(target_distance=td, target_time=tt)
 
-    def detect_objects(self, treshold=10, desync=False):
+    def detect_objects(self, treshold=15, desync=False):
         if not desync:
             us1 = self.us_sensor.fetch()
             us2 = self.us_sensor_2.fetch()
@@ -280,19 +282,13 @@ class Car():
             return us1, us2
         return None
 
-    def which_us_sensor(self, treshold=10):
+    def which(self,tup, treshold=8):
         s1_f = False
         s2_f = False
-
-        val = self.us_sensor_2.fetch()
-        if val is not None:
-            if val < treshold:
-                s2_f = True
-
-        val = self.us_sensor.fetch()
-        if val is not None:
-            if val < treshold:
-                s1_f = True
+        if tup[0] < treshold:
+            s1_f = True
+        if tup[1] < treshold:
+            s2_f = True
         return s1_f, s2_f
     
     def get_us_tuple(self):
@@ -301,49 +297,106 @@ class Car():
         if val is None or val2 is None:
             return None
         return val, val2
+    
+    def get_us_regions_prob(self):
+        if len(self.us_regions) == 0:
+            return None
+        left = 0
+        right = 0
+        both = 0
+        none = 0
+        for i in self.us_regions:
+            if i == "left":
+                left += 1
+            elif i == "right":
+                right += 1
+            elif i == "both":
+                both += 1
+            else:
+                none += 1
+        return left/len(self.us_regions), right/len(self.us_regions), both/len(self.us_regions), none/len(self.us_regions)
+
+
+    def close_to_object_adjustment(self, treshold=5):
+        tup = self.get_us_tuple()
+        if tup is not None:
+            pass
+
+    def mini_scan(self, direction="left", treshold=4):
+        if direction == "left":
+            self.turn_left(50, 10)
+        else:
+            self.turn_right(50, 10)
+
+        while not self.is_stopped:
+            time.sleep(0.05)
+            self.update()
+            tup = self.get_us_tuple()
+            if tup is not None:
+                if min(tup) < treshold:
+                    self.stop()
+                    if tup.index(min(tup)) == 0:
+                        print("object aligned with left sensor")
+                        return "left"
+                    else:
+                        print("object aligned with right sensor")
+                        return "right"
+
+        print("no object detected, reverting back")
+        if direction == "left":
+            self.turn_right(50, 10)
+            self.wait_for_action()
+        else:
+            self.turn_left(50, 10)
+            self.wait_for_action()
+        return None
 
     def scan(self, treshold=8, treshold2=4):
         tup = self.get_us_tuple()
         if tup is not None:
-            if min(tup) < treshold:
-                self.forward(50, 4)
-                while not self.is_stopped:
-                    self.update()
-                    time.sleep(0.05)
+            mask = self.which(tup, treshold)
+            if mask[0] and mask[1]:
+                self.us_regions.append("both")
+            elif mask[0]:
+                self.us_regions.append("left")
+            elif mask[1]:
+                self.us_regions.append("right")
+            else:
+                self.us_regions.append("none")
+
+        prob = self.get_us_regions_prob()
+        if prob is not None:
+            max_prob = max_prob.index(max(prob)) #argmax
+            if max_prob == 3:
+                return None
+
+            dist = min(min(tup)*0.6, 4)
+            self.forward(50, dist)
+            while not self.is_stopped:
+                self.update()
+                time.sleep(0.05)
                 tup = self.get_us_tuple()
                 if tup is not None:
-                    if tup[0] < treshold2:
+                    if min(tup) < treshold2:
                         self.stop()
-                        return "left_c"
-                    if tup[1] < treshold:
-                        self.stop()
-                        return "right_c"
-                    self.turn_left(50, 10)
-                    while not self.is_stopped:
-                        time.sleep(0.05)
-                        tup = self.get_us_tuple()
+                        if tup.index(min(tup)) == 0:
+                            print("object aligned with left sensor")
+                            return "left"
+                        else:
+                            print("object aligned with right sensor")
+                            return "right"
 
-                        if tup is not None:
-                            if tup[0] < treshold2:
-                                self.stop()
-                                return "left_c"
-                            if tup[1] < treshold:
-                                self.stop()
-                                return "right_c"
-                        self.update()
-                    self.turn_right(50, 20)
-                    while not self.is_stopped:
-                        time.sleep(0.05)
-                        tup = self.get_us_tuple()
+            if max_prob == 0:
+                print("object lost in left side")
+                return self.mini_scan("left", treshold2)
+            elif max_prob == 1:
+                print("object lost in right side")
+                return self.mini_scan("right", treshold2)
+            else:
+                print("object lost in middle")
+                return self.mini_scan("left", treshold2)
 
-                        if tup is not None:
-                            if tup[0] < treshold2:
-                                self.stop()
-                                return "left_c"
-                            if tup[1] < treshold:
-                                self.stop()
-                                return "right_c"
-                        self.update()
+        print("wall ahead or no object detected")
         return None
 
             
