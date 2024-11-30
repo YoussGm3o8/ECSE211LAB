@@ -344,21 +344,21 @@ class Car():
             return True
         return False
 
-    def scan_left(self, turning_time=20, treshold=20):
-        return self.scan(1, turning_time, treshold)
+    def scan_left(self, turning_time=20, treshold=20, upper_bound=60):
+        return self.scan(1, turning_time, treshold, upper_bound)
     
-    def scan_right(self, turning_time=20, treshold=20):
-        return self.scan(-1, turning_time, treshold)
+    def scan_right(self, turning_time=20, treshold=20, upper_bound=60):
+        return self.scan(-1, turning_time, treshold, upper_bound)
 
-    def scan(self, direction=1, turning_time=20, treshold=20):
+    def scan(self, direction=1, turning_time=20, treshold=20, upper_bound=60):
         no_filter = False
         self.turn(MODERATE * direction, time=turning_time)
 
         while self.is_stopped:
             self.update(sleep=0.05)
-            us1 = self.median_filter.update(self.state.us_sensor)
-            us2 = self.median_filter_2.update(self.state.us_sensor_2)
-            if abs(self.state.us_sensor_2 - self.state.us_sensor) > treshold:
+            us1 = self.median_filter.update(self.state.us_sensor) if self.state.us_sensor < upper_bound else self.median_filter.update(upper_bound)
+            us2 = self.median_filter_2.update(self.state.us_sensor_2) if self.state.us_sensor_2 < upper_bound else self.median_filter_2.update(upper_bound)
+            if us2 < upper_bound and us1 < upper_bound and self.state.us_sensor_2 - self.state.us_sensor > treshold:
                 no_filter = True
             if abs(us2 - us1) > treshold:
                 return True, no_filter
