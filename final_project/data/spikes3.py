@@ -7,7 +7,7 @@ from collections import deque
 
 # Load your data (replace with correct path if needed)
 path = os.path.dirname(__file__)
-path = os.path.join(path, "csv", "us_data3.csv")
+path = os.path.join(path, "csv", "us_data4.csv")
 data = np.genfromtxt(path, delimiter=",", skip_header=1)
 
 # Filter class
@@ -41,11 +41,14 @@ class Median_Filter(Filter):
 
 
 # Apply median filter to the data (assuming data[:, 1] is the signal)
-median_filter = Median_Filter(buffer_length=5)  # You can change the buffer size
+median_filter_size = 5
+median_filter = Median_Filter(buffer_length=median_filter_size)  # You can change the buffer size
 filtered_data = [median_filter.update(y) for y in data[:, 1]]
 
 # Calculate the difference between the original and filtered data (this highlights the outliers)
-outlier_data = data[:, 1] - np.array(filtered_data)
+n = median_filter_size // 2
+outlier_data = data[:-n, 1] - np.array(filtered_data)[n:]
+outlier_data = np.where(outlier_data < -1, outlier_data, 0)
 
 # Optionally, you can amplify the outliers by multiplying the differences
 amplified_outliers = outlier_data * 5  # Adjust the multiplier as needed to emphasize the outliers
@@ -71,7 +74,7 @@ plt.legend()
 
 # Plot the amplified outliers (difference between original and filtered)
 plt.subplot(3, 1, 3)
-plt.plot(data[:, 0], amplified_outliers, label="Amplified Outliers", color='red')
+plt.plot(data[n:, 0], amplified_outliers, label="Amplified Outliers", color='red')
 plt.title("Amplified Outliers (Difference)")
 plt.xlabel("Time")
 plt.ylabel("Amplitude")
