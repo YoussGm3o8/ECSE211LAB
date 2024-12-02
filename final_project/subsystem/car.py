@@ -369,18 +369,11 @@ class Car():
             # self.stop()
             # self.flag = Flags.OBJECT
             return "right"
-        
-        if self.state.us_sensor is not None and self.state.us_sensor < treshold:
-            # self.stop()
-            # self.flag = Flags.OBJECT
-            return "us"
 
         return None
 
     def avoid_wall(self, treshold=15) -> bool:
-        while self.state.us_sensor_2 is None:
-            self.update(0.05)
-        if self.state.us_sensor_2 < treshold:
+        if self.state.us_sensor_2 < treshold and self.state.us_sensor < treshold:
                 self.flag = Flags.WALL
                 self.stop()
                 return True

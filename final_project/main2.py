@@ -40,15 +40,14 @@ def check_cube(car):
         car.forward(FORWARD_SPEED)
 
 def scan(car, duration=10, treshold=25):
-    scanner = Diff(5, 1.2, 0.8)
-    if car.clock % 60 == 0:
+    if car.clock % 30 == 0:
         print("---------------scanning ---------------")
 
         car.turn_left(TURN_SPEED)
         for i in range(duration):
             car.update(0.05)
             mini = car.mini_scan()
-            if (scanner.update(time.time(), car.state.us_sensor if car.state.us_sensor < treshold else treshold)) or (mini is not None and mini != "us"):
+            if mini is not None:
                 print("object found")
                 car.stop()
                 input("any input to continue")
@@ -60,7 +59,7 @@ def scan(car, duration=10, treshold=25):
         for i in range(duration*2):
             car.update(0.05)
             mini = car.mini_scan()
-            if (scanner.update(time.time(), car.state.us_sensor if car.state.us_sensor < treshold else treshold)) or (mini is not None and mini != "us"):
+            if mini is not None:
                 print("object found")
                 car.stop()
                 input("any input to continue")
@@ -72,7 +71,7 @@ def scan(car, duration=10, treshold=25):
         for i in range(duration):
             car.update(0.05)
             mini = car.mini_scan()
-            if (scanner.update(time.time(), car.state.us_sensor if car.state.us_sensor < treshold else treshold)) or (mini is not None and mini != "us"):
+            if mini is not None:
                 print("object found")
                 car.stop()
                 input("any input to continue")
