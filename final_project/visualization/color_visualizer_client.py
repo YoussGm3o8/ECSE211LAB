@@ -2,9 +2,6 @@
 A client script to simply visualize color sensor data
 """
 
-from common.wrappers import Normalized_Sensor
-from common.normalization import RGB_Normalizer
-from components.colorsensor import color_sensor
 from utils.brick import reset_brick
 from communication.client import Client
 import time

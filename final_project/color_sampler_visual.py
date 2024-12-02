@@ -3,9 +3,10 @@ This script is used to sample the color sensor and save the data to a csv file
 It requires color_visualizer_server.py to be running your computer to visualize the data
 """
 
-from components.colorsensor import color_sensor
 from utils.brick import reset_brick
 from communication.client import Client
+from common.constants_params import *
+from utils.brick import EV3ColorSensor
 import time
 import sys
 import os
@@ -16,22 +17,22 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 cl = Client()
-
+sensor = EV3ColorSensor(COLOR_SENSOR)
 buffer = []
 buffer_file = []
 
 try:
-    for i, rgb in enumerate(color_sensor):
-        print(color_sensor.predict(rgb))
+    for i in range(500):
         time.sleep(0.05)
-        rgb = list(map(int, rgb))
-        buffer.append(rgb)
-        buffer_file.append(rgb)
-        if len(buffer) == 10:
-            cl.send(buffer)
-            buffer.clear()
-        if len(buffer_file) >= 1000:
-            break
+        rgb = sensor.get_rgb()
+        if rgb[0] is not None:
+            print(rgb)
+            rgb = list(map(int,rgb))
+            buffer.append(rgb)
+            buffer_file.append(rgb)
+            if len(buffer) == 10:
+                cl.send(buffer)
+                buffer.clear()
 
 except Exception as e:
     print(e)
