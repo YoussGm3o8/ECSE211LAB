@@ -1,31 +1,26 @@
-import components.engine as engine
-from components.engine import global_enable
-from main import Poop_Scooper
-from components.gyrosensor import GYRO_Sensor
-from components.ultrasonic import US_Sensor
-from components.colorsensor import Color_Sensor, Color_Sensor2
-from common.constants_params import *
-from common.constants_params import LEFT_WHEEL_PORT, RIGHT_WHEEL_PORT
-from utils.brick import Motor, wait_ready_sensors, reset_brick
-from subsystem.car import Car
+import subsystem.car as c
+from common.filters import Diff
 import time
+from communication import client
 
-car = Car(GYRO_Sensor(GYRO_PORT), US_Sensor(US_PORT), Color_Sensor(COLOR_SENSOR), Color_Sensor2(COLOR_SENSOR_STICKER), Motor(LEFT_WHEEL_PORT), Motor(RIGHT_WHEEL_PORT), True)
-wait_ready_sensors()
-global_enable[1], global_enable[2] = False, False
-car.debug = False
-engine.start()
 
+d = Diff(3, 1.5, 0.7)
+
+
+cl = client.Client()
+car = c.Car()
+
+
+car.turn_left(50)
 try:
     while True:
-        state = engine.global_state.get()
-        print("x: " , state.x_pos * 100, "y: " , state.y_pos * 100, "direction :", state.g_sensor % 360)
-        
-        car.forward_until_distance(360, 20)
-        car.turn_car(180, 90)
-
-
+        car.update(0.05)
+        data = 30 if car.state.us_sensor > 30 else car.state.us_sensor
+        cl.send((time.time(), data))
+        if d.update(time.time(), data):
+            print("detected cube")
+            car.stop()
+            input("press enter to start again")
+            car.turn_left(50)
 finally:
-    car.stop()
-    reset_brick()
-    engine.end()
+    car.kill()

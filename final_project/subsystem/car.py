@@ -171,6 +171,8 @@ class Car():
             return None
 
     def update(self, sleep=None, update_state=True, filter_colors=False):
+        if self.debug:
+            print(self.current_action)
         self.clock += 1
         if self.current_action[0] == "forward":
             if self.target_distance is not None:
@@ -200,7 +202,7 @@ class Car():
                 self.abs_angle_time += self.current_action[1]
             if self.target_time is not None:
                 print(self.target_time, self.abs_angle_time)
-                if (self.target_time - self.abs_angle_time) * self.current_action[1] >= 0:
+                if (self.target_time - self.abs_angle_time) * self.current_action[1] <= 0:
                     self.stop()
                     self.flag = Flags.TURN_COMPLETE
 
@@ -263,6 +265,8 @@ class Car():
         if self.debug:
             print("Water flags: ", flags)
 
+        if flags[0] == False and flags[1] == False:
+            return
         if flags[0] and flags[1]:
             self.flag = Flags.WATER
             td = self.get_distance_remaining()
@@ -322,7 +326,7 @@ class Car():
         if self.state.us_sensor is not None and self.state.us_sensor < treshold:
             # self.stop()
             # self.flag = Flags.OBJECT
-            return "left_us"
+            return "us"
 
         return None
 

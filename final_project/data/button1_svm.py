@@ -55,7 +55,7 @@ def normalize(pixel):
 def predict(pixel):
 
     str = ""   
-    if is_unknown(pixel):
+    if is_unknown(pixel, 2600):
         str = "u"
 
     pixel = normalize(pixel)

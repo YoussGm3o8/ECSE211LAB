@@ -12,9 +12,9 @@ car = car.Car(debug=True)
 def avoid_water(car):
     water_f = car.is_water()
     print(water_f)
-    if water_f[0] == True:
+    if water_f[0]:
         car.turn_right(100)
-        while water_f[0] == True:
+        while water_f[0]:
             car.update(0.05)
             water_f = car.is_water()
             print(water_f)
@@ -22,9 +22,9 @@ def avoid_water(car):
         time.sleep(0.1)
         print("forward")
         car.forward(150)
-    if water_f[1] == True:
+    if water_f[1]:
         car.turn_left(100)
-        while water_f[1] == True:
+        while water_f[1]:
             car.update(0.05)
             water_f = car.is_water()
             print(water_f)
@@ -32,6 +32,33 @@ def avoid_water(car):
         time.sleep(0.1)
         print("forward")
         car.forward(150)
+
+def return_home(car):
+    """
+    assume you are at a border facing the wall
+    """
+    car.stop()
+    car.turn_left(100)
+    while(car.state.right_color_sensor[-1] != 'r'):
+        print(car.state.right_color_sensor) #this may be white
+        car.update(0.05)
+    car.stop()
+    car.turn_right(100)
+    while(car.state.right_color_sensor[-1] == 'r'):
+        car.update(0.05)
+
+    while True:
+        car.update(0.05)
+        if car.state.right_color_sensor[-1] == 'r':
+            car.wheel_left(100) #if this makes no sense its because the ports are wrong so ignore
+            car.wheel_right(140)
+        else:
+            car.wheel_left(140)
+            car.wheel_right(100)
+
+
+
+
 
 def check_cube(car):
     if car.avoid_wall(8):
