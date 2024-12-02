@@ -2,13 +2,7 @@ import subsystem.car as car
 import time
 from common.constants_params import *
 
-
-
-
-
-
 car = car.Car(debug=True)
-
 
 def avoid_water(car):
     water_f = car.is_water()
@@ -72,12 +66,12 @@ def scan(car):
 
 def scan_v2(car):
     car.turn_left(100)
-    for i in range(30):
+    for _ in range(30):
         car.update(0.05)
         avoid_water(car)
         check_cube(car)
     car.turn_right(100)
-    for i in range(30):
+    for _ in range(30):
         car.update(0.05)
         avoid_water(car)
         check_cube(car)
