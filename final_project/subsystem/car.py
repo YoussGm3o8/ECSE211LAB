@@ -83,17 +83,19 @@ class Car():
     
     def arm_up(self):
         self.arm.set_limits(0, 220)
-        self.arm.set_position_relative(-420)
+        self.arm.reset_position()
+        self.arm.set_position_relative(-320)
         time.sleep(2)
         self.arm_reset()
 
     def collect_cube(self):
         self.arm_reset()
-        self.reverse(100)
-        time.sleep(1.2)
+        self.reverse(360)
+        time.sleep(0.8)
+        self.stop()
         self.arm_down()
         self.forward(150)
-        time.sleep(2.5)
+        time.sleep(2.2)
         self.stop()
         self.arm_up()
 
@@ -364,20 +366,33 @@ class Car():
         if self.state.left_color_sensor is not None and self.state.left_color_sensor[0] != "u":
             # self.stop()
             # self.flag = Flags.OBJECT
-            return "left"
+            return "left", self.state.left_color_sensor
         if self.state.right_color_sensor is not None and self.state.right_color_sensor[0] != "u":
             # self.stop()
             # self.flag = Flags.OBJECT
-            return "right"
+            return "right", self.state.right_color_sensor
 
-        return None
+        return None, None
 
-    def avoid_wall(self, treshold=15) -> bool:
+    def avoid_wall(self, treshold=15) -> tuple:
+        self.update()
         if self.state.us_sensor_2 < treshold and self.state.us_sensor < treshold:
-                self.flag = Flags.WALL
-                self.stop()
-                return True
-        return False
+            self.flag = Flags.WALL
+            self.stop()
+            return True, "front"
+
+        elif self.state.us_sensor_2 < treshold:
+            self.flag = Flags.WALL
+            self.stop()
+            return True, "left"
+        
+        elif self.state.us_sensor < treshold:
+            self.flag = Flags.WALL
+            self.stop()
+            return True, "right"
+        
+        self.flag = None
+        return False, None
 
     def reset_flag(self):
         self.flag = Flags.NONE
