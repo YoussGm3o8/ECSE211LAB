@@ -7,7 +7,7 @@ from collections import deque, namedtuple
 from common.filters import Median_Filter
 from enum import Enum
 
-state= namedtuple("state", ["us_sensor", "us_sensor_2", "left_color_sensor", "right_color_sensor"])
+state= namedtuple("state", ["us_sensor", "us_sensor_2", "left_color_sensor", "right_color_sensor", "arm", "dump"])
 
 class Flags(Enum):
     """
@@ -34,6 +34,8 @@ class Car():
         self.wheel_right = Motor(RIGHT_WHEEL_PORT)
         self.left_color_sensor = Color_Sensor(COLOR_SENSOR)
         self.right_color_sensor = Color_Sensor2(COLOR_SENSOR_STICKER)
+        self.arm = Motor(ARM_PORT)
+        self.dump = Motor(DUMB_PORT)
 
         self.debug = debug
         self.abs_angle_time = 0
@@ -46,7 +48,7 @@ class Car():
         self.flag = Flags.NONE
 
         self.fix_memory = None
-        self.state = state(None, None, None, None)
+        self.state = state(None, None, None, None, None, None)
 
         self.clock = 0
         self.color_vote = deque(maxlen=5)
@@ -54,6 +56,44 @@ class Car():
 
         self.median_filter = Median_Filter(5)
         self.median_filter_2 = Median_Filter(5)
+    
+    def dump_cubes(self):
+        self.arm.set_position_relative(120)
+        time.sleep(0.3)
+        self.dump.reset_position()
+        self.dump.set_limits(0, 220)
+        self.dump.set_position_relative(120)
+        time.sleep(1)
+        self.dump.set_position_relative(-120)
+        time.sleep(0.3)
+        self.arm.set_position_relative(-120)
+
+    def arm_reset(self):
+        self.arm.set_limits(0, 220)
+        self.arm.set_dps(-1)
+        time.sleep(0.1)
+        self.arm.set_dps(0)
+        self.arm.reset_position()
+
+    def arm_down(self):
+        self.arm.set_limits(0, 220)
+        self.arm.reset_position()
+        self.arm.set_position_relative(320)
+        time.sleep(2)
+    
+    def arm_up(self):
+        self.arm.set_limits(0, 220)
+        self.arm.set_position_relative(-320)
+        time.sleep(2)
+        self.arm_reset()
+
+    def collect_cube(self):
+        self.reverse(10)
+        time.sleep(1)
+        self.arm.arm_down()
+        self.forward(10)
+        time.sleep(1)
+        self.arm.up()
 
     def kill(self):
         reset_brick()
@@ -220,7 +260,11 @@ class Car():
     def is_water(self):
         """
         returns a tuple (bool, bool) if color sensor detects blue or purple
+        Waits until color sensors provide non-null values
         """
+        while self.state.left_color_sensor is None or self.state.right_color_sensor is None:
+            self.update(0.05)
+        
         c1 = self.state.left_color_sensor
         c2 = self.state.right_color_sensor
         c1_f = False
@@ -232,7 +276,7 @@ class Car():
             c2_f = True
         
         return c1_f, c2_f
-
+    
     def wait_for_action(self, timeout=None):
         if timeout is not None:
             ti = time.time()
@@ -331,6 +375,9 @@ class Car():
         return None
 
     def avoid_wall(self, treshold=15) -> bool:
+        while self.state.us_sensor_2 is None:
+            self.update(0.05)
+        
         if self.state.us_sensor_2 < treshold:
             self.flag = Flags.WALL
             self.stop()
@@ -360,11 +407,18 @@ class Car():
 
         while self.is_stopped:
             self.update(sleep=0.05)
+            
+            # Wait for non-null sensor readings
+            while (self.state.us_sensor is None or 
+                self.state.us_sensor_2 is None):
+                self.update(sleep=0.05)
+            
             us1 = self.median_filter.update(self.state.us_sensor) if self.state.us_sensor < upper_bound else self.median_filter.update(upper_bound)
             us2 = self.median_filter_2.update(self.state.us_sensor_2) if self.state.us_sensor_2 < upper_bound else self.median_filter_2.update(upper_bound)
+            
             if us2 < upper_bound and us1 < upper_bound and self.state.us_sensor_2 - self.state.us_sensor > treshold:
                 no_filter = True
             if abs(us2 - us1) > treshold:
                 return True, no_filter
-        #remember to check the flag for ERRORS, WATER, WALL
+        
         return False, no_filter
