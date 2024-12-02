@@ -24,10 +24,7 @@ red = np.genfromtxt(os.path.join(path, "red.csv"), delimiter=',', skip_header=1)
 yellow = np.genfromtxt(os.path.join(path, "yellow.csv"), delimiter=',', skip_header=1)
 orange = np.genfromtxt(os.path.join(path, "orange.csv"), delimiter=',', skip_header=1)
 purple = np.genfromtxt(os.path.join(path, "purple.csv"), delimiter=',', skip_header=1)
-red2 = np.genfromtxt(os.path.join(path, "red_new.csv"), delimiter=',', skip_header=1)
-red = np.concatenate((red, red2))
-yellow2 = np.genfromtxt(os.path.join(path, "yellow_new.csv"), delimiter=',', skip_header=1)
-yellow = np.concatenate((yellow, yellow2))
+white = np.genfromtxt(os.path.join(path, "white.csv"), delimiter=',', skip_header=1)
 
 green = np.nan_to_num(green / np.repeat(np.sum(green, axis=1).reshape(-1, 1), 3, axis=1))
 blue = np.nan_to_num(blue / np.repeat(np.sum(blue, axis=1).reshape(-1, 1), 3, axis=1))
@@ -35,27 +32,11 @@ red = np.nan_to_num(red / np.repeat(np.sum(red, axis=1).reshape(-1, 1), 3, axis=
 yellow = np.nan_to_num(yellow / np.repeat(np.sum(yellow, axis=1).reshape(-1, 1), 3, axis=1))
 orange = np.nan_to_num(orange / np.repeat(np.sum(orange, axis=1).reshape(-1, 1), 3, axis=1))
 purple = np.nan_to_num(purple / np.repeat(np.sum(purple, axis=1).reshape(-1, 1), 3, axis=1))
-
-def normalize(pixel):
-    s = sum(pixel)
-    if s == 0:
-        return pixel
-    return [i/s for i in pixel]
-
-green = np.array([normalize(pixel) for pixel in green])
-blue = np.array([normalize(pixel) for pixel in blue])
-red = np.array([normalize(pixel) for pixel in red])
-yellow = np.array([normalize(pixel) for pixel in yellow])
-orange = np.array([normalize(pixel) for pixel in orange])
-purple = np.array([normalize(pixel) for pixel in purple])
-
-
+white = np.nan_to_num(white / np.repeat(np.sum(white, axis=1).reshape(-1, 1), 3, axis=1))
 
 def get_weight(group0, group1):
-    x1 = np.concatenate(group1)
-    print(x1.shape)
-    x2 = np.concatenate(group0)
-    print(x2.shape)
+    x1 = np.array(group1).reshape((-1, 3))
+    x2 = np.array(group0).reshape((-1, 3))
     y1 = np.zeros(x1.shape[0])
     y2 = np.ones(x2.shape[0])
 
@@ -72,23 +53,35 @@ def get_weight(group0, group1):
 
 if __name__ == '__main__':
 
-    button_weights = []
+    button2_weights = []
 
     decision_function = [
-        ([green, blue, purple], [orange, red, yellow]),
-        ([green], [purple, blue]),
-        ([orange, red], [yellow])
+        ([green, blue], [white, orange, red, purple, yellow]),
+        ([green], [blue]),
+        ([orange, red, yellow], [purple, white]),
+        ([purple], [white]),
+        ([orange, red], [yellow]),
+        ([orange], [red])
         ]
+
+    # decision_function = [
+    #         ([white, green, blue, purple], [orange, red, yellow]),
+    #         ([green], [purple, blue, white]),
+    #         ([purple, white], [blue]),
+    #         ([purple], [white]),
+    #         ([yellow], [orange, red]),
+    #         ([orange], [red])
+    #         ]
 
     for group0, group1 in decision_function:
         weight, bias = get_weight(group0, group1)
-        button_weights.append((weight, bias))
+        button2_weights.append((weight, bias))
 
 
     #get path of this file directory
     path = os.path.dirname(os.path.abspath(__file__))
-    output_location = os.path.join(path, "weights/button1_w2.pkl")
+    output_location = os.path.join(path, "weights/button1_w.pkl")
     with open(output_location , 'wb') as f:
-        pickle.dump(button_weights, f)
+        pickle.dump(button2_weights, f)
         print("weights saved to ", output_location)
 

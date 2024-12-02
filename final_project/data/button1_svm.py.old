@@ -15,19 +15,19 @@ import os
 # load the weights from weights/button1_w.pkl
 
 path = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(path, 'weights/button1_w2.pkl'), 'rb') as f:
+with open(os.path.join(path, 'weights/button1_w.pkl'), 'rb') as f:
     weights = pickle.load(f)
 
 """
-true -> first element
-false -> second element
-    
+    decision_function = [
+        ([green, blue], [white, orange, red, purple, yellow]),
+        ([green], [blue]),
+        ([orange, red, yellow], [purple, white]),
+        ([purple], [white]),
+        ([orange, red], [yellow]),
+        ([orange], [red])
+        ]
 """
-# decision_function = [
-#         ([green, blue, purple], [orange, red, yellow]),
-#         ([green], [purple, blue]),
-#         ([orange, red], [yellow])
-#         ]
 
 def project(pixel, weight, bias):
     """
@@ -53,19 +53,29 @@ def normalize(pixel):
 
 
 def predict(pixel):
-    c = ""
+
+    str = ""   
     if is_unknown(pixel, 2600):
-        c += "u"
+        str = "u"
 
     pixel = normalize(pixel)
 
     if project(pixel, weights[0][0], weights[0][1]):
-        if (project(pixel, weights[1][0], weights[1][1])):
-            return c+'g'
+        if project(pixel, weights[1][0], weights[1][1]):
+            return str+'g'
         else:
-            return c+'b'
+            return str+'b'
     else:
-        if project(pixel, weights[2][0], weights[2][1]):
-            return c+'o'
+        if not project(pixel, weights[2][0], weights[2][1]):
+            if not project(pixel, weights[3][0], weights[3][1]):
+                return str+'w'
+            else:
+                return str+'p'
         else:
-            return c+'y'
+            if not project(pixel, weights[4][0], weights[4][1]):
+                return str+'y'
+            else:
+                if not project(pixel, weights[5][0], weights[5][1]):
+                    return str+'r'
+                else:
+                    return str+'o'

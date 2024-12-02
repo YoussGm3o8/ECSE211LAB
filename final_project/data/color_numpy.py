@@ -20,6 +20,8 @@ orange = np.genfromtxt(os.path.join(path, "orange.csv"), delimiter=',', skip_hea
 purple = np.genfromtxt(os.path.join(path, "purple.csv"), delimiter=',', skip_header=1)
 white = np.genfromtxt(os.path.join(path, "white.csv"), delimiter=',', skip_header=1)
 
+red = np.concatenate((red, np.genfromtxt(os.path.join(path, "red_new.csv"), delimiter=',', skip_header=1)))
+yellow = np.concatenate((yellow, np.genfromtxt(os.path.join(path, "yellow_new.csv"), delimiter=',', skip_header=1)))
 def normalize(data):
     s = data.sum(axis=1).reshape(-1, 1)
     data = data/s
@@ -41,13 +43,13 @@ if __name__ == "__main__":
     #scatter plot 3d
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(blue_norm[:,0], blue_norm[:,1], blue_norm[:,2], c='b', marker='o', label='blue')
-    ax.scatter(red_norm[:,0],red_norm[:,1], red_norm[:,2], c='r', marker='o', label='red')
+    ax.scatter(red_norm[:,0], red_norm[:,1], red_norm[:,2], c='r', marker='o', label='red')
+    ax.scatter(green_norm[:,0], green_norm[:,1], green_norm[:,2], c='g', marker='o', label='green')
     ax.scatter(yellow_norm[:,0], yellow_norm[:,1], yellow_norm[:,2], c='y', marker='o', label='yellow')
+    ax.scatter(blue_norm[:,0], blue_norm[:,1], blue_norm[:,2], c='b', marker='o', label='blue')
     ax.scatter(orange_norm[:,0], orange_norm[:,1], orange_norm[:,2], c='orange', marker='o', label='orange')
     ax.scatter(purple_norm[:,0], purple_norm[:,1], purple_norm[:,2], c='purple', marker='o', label='purple')
-    ax.scatter(green_norm[:,0], green_norm[:,1], green_norm[:,2], c='g', marker='o', label='green')
-    ax.scatter(white_norm[:,0], white_norm[:,1], white_norm[:,2], c='gray', marker='o', label='white')
+    # ax.scatter(white_norm[:,0], white_norm[:,1], white_norm[:,2], c='gray', marker='o', label='white')
     plt.show()
 
     fig = plt.figure()
@@ -99,6 +101,7 @@ if __name__ == "__main__":
     print("Yellow: ", yellow_correct/yellow.shape[0])
     print("Orange: ", orange_correct/orange.shape[0])
     print("Purple: ", purple_correct/purple.shape[0])
+    print("above")
     import svm
     # now do the same using svm.clf
     green_correct = 0

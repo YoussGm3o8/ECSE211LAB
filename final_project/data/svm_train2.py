@@ -15,7 +15,7 @@ import pickle
 import os
 
 path = os.path.join(os.path.dirname(__file__), "csv", "color")
-# path = os.path.join(path, "sensor2")
+path = os.path.join(path, "sensor2")
 print(path)
 
 green = np.genfromtxt(os.path.join(path, "green.csv"), delimiter=',', skip_header=1)
@@ -50,7 +50,6 @@ orange = np.array([normalize(pixel) for pixel in orange])
 purple = np.array([normalize(pixel) for pixel in purple])
 
 
-
 def get_weight(group0, group1):
     x1 = np.concatenate(group1)
     print(x1.shape)
@@ -72,7 +71,7 @@ def get_weight(group0, group1):
 
 if __name__ == '__main__':
 
-    button_weights = []
+    button2_weights = []
 
     decision_function = [
         ([green, blue, purple], [orange, red, yellow]),
@@ -82,13 +81,13 @@ if __name__ == '__main__':
 
     for group0, group1 in decision_function:
         weight, bias = get_weight(group0, group1)
-        button_weights.append((weight, bias))
+        button2_weights.append((weight, bias))
 
 
     #get path of this file directory
     path = os.path.dirname(os.path.abspath(__file__))
-    output_location = os.path.join(path, "weights/button1_w2.pkl")
+    output_location = os.path.join(path, "weights/button2_w2.pkl")
     with open(output_location , 'wb') as f:
-        pickle.dump(button_weights, f)
+        pickle.dump(button2_weights, f)
         print("weights saved to ", output_location)
 
