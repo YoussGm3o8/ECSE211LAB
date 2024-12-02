@@ -83,17 +83,20 @@ class Car():
     
     def arm_up(self):
         self.arm.set_limits(0, 220)
-        self.arm.set_position_relative(-320)
+        self.arm.set_position_relative(-420)
         time.sleep(2)
         self.arm_reset()
 
     def collect_cube(self):
-        self.reverse(10)
-        time.sleep(1)
-        self.arm.arm_down()
-        self.forward(10)
-        time.sleep(1)
-        self.arm.up()
+        self.arm_reset()
+        self.reverse(100)
+        time.sleep(1.2)
+        self.arm_down()
+        self.forward(150)
+        time.sleep(2.5)
+        self.stop()
+        self.arm_up()
+
 
     def kill(self):
         reset_brick()
@@ -250,9 +253,9 @@ class Car():
             if filter_colors:
                 self.color_vote.append(self.left_color_sensor.fetch())
                 self.color_vote_2.append(self.right_color_sensor.fetch())
-                self.state = state(self.us_sensor.fetch(), self.us_sensor_2.fetch(), self.get_color(self.color_vote), self.get_color(self.color_vote_2))
+                self.state = state(self.us_sensor.fetch(), self.us_sensor_2.fetch(), self.get_color(self.color_vote), self.get_color(self.color_vote_2), None, None)
             else:
-                self.state = state(self.us_sensor.fetch(), self.us_sensor_2.fetch(), self.left_color_sensor.fetch(), self.right_color_sensor.fetch())
+                self.state = state(self.us_sensor.fetch(), self.us_sensor_2.fetch(), self.left_color_sensor.fetch(), self.right_color_sensor.fetch(), None, None)
 
         if sleep is not None:
             time.sleep(sleep)
@@ -377,11 +380,10 @@ class Car():
     def avoid_wall(self, treshold=15) -> bool:
         while self.state.us_sensor_2 is None:
             self.update(0.05)
-        
         if self.state.us_sensor_2 < treshold:
-            self.flag = Flags.WALL
-            self.stop()
-            return True
+                self.flag = Flags.WALL
+                self.stop()
+                return True
         return False
 
     def reset_flag(self):

@@ -137,11 +137,11 @@ def return_home(car):
 def snake(car, speed, count,direction, odd=10):
     if count % odd == 0:
         if direction == 1:
-            car.wheel_left(speed)
-            car.wheel_right(speed*2)
+            car.wheel_left.set_dps(speed)
+            car.wheel_right.set_dps(speed*2)
         else:
-            car.wheel_left(speed*2)
-            car.wheel_right(speed)
+            car.wheel_left.set_dps(speed*2)
+            car.wheel_right.set_dps(speed)
         return -direction
     else:
         return direction
