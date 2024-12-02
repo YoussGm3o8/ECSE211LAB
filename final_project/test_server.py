@@ -8,6 +8,7 @@ sv = Server()
 
 try:
     for message in sv:
+        print(message)
         plt.scatter(message[0], message[1], color="blue")
 
         plt.draw()
