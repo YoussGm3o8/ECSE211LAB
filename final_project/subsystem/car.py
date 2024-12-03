@@ -90,14 +90,15 @@ class Car():
 
     def collect_cube(self):
         self.arm_reset()
-        self.reverse(360)
-        time.sleep(0.8)
-        self.stop()
-        self.arm_down()
+        # self.reverse(360)
+        # time.sleep(0.8)
+        # self.stop()
         self.forward(150)
-        time.sleep(2.2)
+        time.sleep(0.2) #2.2
         self.stop()
         self.arm_up()
+        self.arm_down()
+        self.stop()
 
 
     def kill(self):

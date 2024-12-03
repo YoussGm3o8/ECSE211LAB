@@ -52,6 +52,15 @@ class Color_Sensor2(Color_Sensor):
     def __init__(self, port):
         super().__init__(port)
 
+    def get_base(self):
+        if self.mode != self.Mode.COMPONENT:
+            self.set_mode(self.Mode.COMPONENT)
+            self.wait_ready()
+        val = self.get_value() #DONT USE sensor.get_value() to get sensor data use this fetch method instead
+        if val is None:
+            return None
+        return button2_svm.get_base(val[:-1])
+
     def fetch(self):
         if self.mode != self.Mode.COMPONENT:
             self.set_mode(self.Mode.COMPONENT)

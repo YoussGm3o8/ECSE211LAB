@@ -6,8 +6,8 @@ from common.filters import Diff
 
 
 TURN_SPEED = 150
-FORWARD_SPEED = 150
-TIMER = 150
+FORWARD_SPEED = 210
+TIMER = 120
 
 car = car.Car(debug=False)
 
@@ -18,14 +18,14 @@ def avoid_water(car):
         while water_f[0] == True:
             car.update(0.05)
             water_f = car.is_water()
-        time.sleep(0.2)
+        time.sleep(0.1)
         car.forward(FORWARD_SPEED)
     if water_f[1] == True:
         car.turn_left(TURN_SPEED)
         while water_f[1] == True:
             car.update(0.05)
             water_f = car.is_water()
-        time.sleep(0.2) #important to overturn
+        time.sleep(0.1) #important to overturn
         car.forward(FORWARD_SPEED)
 
 def check_cube(car):
@@ -60,97 +60,120 @@ def check_cube(car):
                 car.turn_right(TURN_SPEED, 5)
                 car.wait_for_action()
 
-
-def scan(car, duration=10, treshold=25):
-    if True: #car.clock % 30 == 0:
+clock = 0
+def scan(car, duration=8, treshold=25):
+    if clock % 14 == 0:
         print("---------------scanning ---------------")
 
         car.turn_left(TURN_SPEED)
         for i in range(duration):
             check_cube(car)
+            check_wall(car)
             avoid_water(car)
 
         car.turn_right(TURN_SPEED)
         for i in range(duration*2):
             check_cube(car)
+            check_wall(car)
             avoid_water(car)
 
         car.turn_left(TURN_SPEED)
         for i in range(duration):
             check_cube(car)
+            check_wall(car)
             avoid_water(car)
 
         car.forward(FORWARD_SPEED)
-        time.sleep(0.1)
-        car.stop()
     else:
         check_cube(car)
+        car.forward(FORWARD_SPEED)
+
 
 def check_wall(car):
-    car.stop()
-    avoiding = car.avoid_wall(15)
+    avoiding = car.avoid_wall(10)
     if avoiding[0]:
         print("wall detected", avoiding[1])
 
-        # car.reverse(TURN_SPEED, 2)
-        car.wait_for_action()
-
         if avoiding[1] == "front":
-            car.reverse(TURN_SPEED, 8)
+            car.reverse(FORWARD_SPEED, 5)
             car.wait_for_action()
-            car.turn_right(TURN_SPEED, 40)
-            car.wait_for_action()
+            car.turn_right(TURN_SPEED, 20)
+            while not car.is_stopped:
+                car.update(0.05)
+                avoid_water(car)
+                if not car.avoid_wall(8)[0]:
+                    time.sleep(0.2)
+                    break
+
+
         elif avoiding[1] == "right":
             print("turn left for right wall")
             car.turn_left(TURN_SPEED, 20)
-            car.wait_for_action()
+            while not car.is_stopped:
+                car.update(0.05)
+                avoid_water(car)
+                if not car.avoid_wall(8)[0]:
+                    time.sleep(0.2)
+                    break
         else:
             print("turn right for left wall")
             car.turn_right(TURN_SPEED, 20)
-            car.wait_for_action()
-
-        scan(car)
-
+            while not car.is_stopped:
+                car.update(0.05)
+                avoid_water(car)
+                if not car.avoid_wall(8)[0]:
+                    time.sleep(0.2)
+                    break
         car.forward(FORWARD_SPEED)
-        
-    else:
-        scan(car)
+
+
+def rotate(car, sp=20):
+    while True:
+        car.update(0.05)
+        if car.right_color_sensor.get_base():
+            car.stop()
+            car.turn_left(TURN_SPEED, 70)
+            car.wait_for_action()
+            car.reverse(100, 7)
+            car.wait_for_action()
+            car.dump_cubes()
+            print("success! hopefully...")
+            exit()
+        if car.state.us_sensor > sp:
+            car.wheel_right.set_dps(FORWARD_SPEED + 100)
+            car.wheel_left.set_dps(FORWARD_SPEED)
+            while car.state.us_sensor > sp:
+                car.update(0.05)
+            car.turn_left(TURN_SPEED)
+
 
 def return_home(car):
     """
     assume you are at a border facing the wall
     """
+    sp = 20
     car.forward(FORWARD_SPEED)
     while True:
         car.update(0.05)
-        if car.avoid_wall(15):
-            break
         avoid_water(car)
-
-    car.turn_left(TURN_SPEED)
-    while(car.state.right_color_sensor[-1] != 'o'):
-        print(car.state.right_color_sensor) #this may be white
-        car.update(0.05)
-
-    car.turn_right(TURN_SPEED)
-    while(car.state.right_color_sensor[-1] == 'o'):
-        car.update(0.05)
-
-    while True:
-        car.update(0.05)
-        if car.state.right_color_sensor[-1] == 'o':
-            time.sleep(0.1) #adjust to overshoot
-            car.wheel_left(TURN_SPEED) #if this makes no sense its because the ports are wrong so ignore
-            car.wheel_right(150)
-        else:
-            car.wheel_left(150)
-            car.wheel_right(TURN_SPEED)
-
+        if (car.state.us_sensor < 14 or car.state.us_sensor_2 < 14):
+            break
+    if car.state.us_sensor < 15:
+        rotate(car, sp)
+    else:
+        car.turn_right(TURN_SPEED)
+        while True:
+            if car.state.us_sensor < 25:
+                car.stop()
+                break
+            car.update(0.05)
+        rotate(car, sp)
 
 try:
     ti = time.time()
     car.forward(FORWARD_SPEED)
     while True:
+        clock += 1
         if time.time() - ti > TIMER:
             print("time to return home!")
             break
@@ -159,27 +182,8 @@ try:
         check_wall(car)
         avoid_water(car)
         scan(car)
-
-    while car.avoid_wall(100)[1] != "front":
-        car.update()
-        time.sleep(0.05)
-        print("not front")
-        if car.avoid_wall(100)[1] == "right":
-            print("right")
-            car.turn_right(100, 10)
-            car.wait_for_action()
-            car.forward(100)
-            time.sleep(0.5)
-            car.stop() 
-        if car.avoid_wall(100)[1] == "left":
-            print("left")
-            car.turn_left(100, 10)
-            car.wait_for_action()
-            car.forward(100)
-            time.sleep(0.5)
-            car.stop() 
+    print("returning home")
     return_home(car)
-    car.dump_cubes()
 finally:
     car.kill()
 
