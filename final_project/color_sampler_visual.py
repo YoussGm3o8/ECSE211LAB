@@ -17,7 +17,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 cl = Client()
-sensor = EV3ColorSensor(COLOR_SENSOR)
+sensor = EV3ColorSensor(COLOR_SENSOR_STICKER)
 buffer = []
 buffer_file = []
 

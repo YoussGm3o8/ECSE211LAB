@@ -29,6 +29,7 @@ def project(pixel, weight, bias):
 
 def is_unknown(pixel, treshold=1150):
     dist = pixel[0] ** 2 + pixel[1] ** 2 + pixel[2] ** 2
+    print("b2", dist)
     return dist < treshold
 
 def normalize(pixel):
