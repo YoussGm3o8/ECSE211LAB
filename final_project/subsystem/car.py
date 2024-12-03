@@ -269,19 +269,19 @@ class Car():
         """
         while self.state.left_color_sensor is None or self.state.right_color_sensor is None:
             self.update(0.05)
-        
+
         c1 = self.state.left_color_sensor
         c2 = self.state.right_color_sensor
         c1_f = False
         c2_f = False
 
-        if c1 == "ub" or c1 == "up":
+        if c1[-1] == "b":
             c1_f = True
-        if c2 == "ub" or c2 == "up":
+        if c2[-1] == "b":
             c2_f = True
-        
+
         return c1_f, c2_f
-    
+
     def wait_for_action(self, timeout=None):
         if timeout is not None:
             ti = time.time()

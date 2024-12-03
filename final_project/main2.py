@@ -128,17 +128,17 @@ def return_home(car):
         avoid_water(car)
 
     car.turn_left(TURN_SPEED)
-    while(car.state.right_color_sensor[-1] != 'o' or car.state.right_color_sensor[-1] != 'y' or car.state.right_color_sensor[-1] != 'r'):
+    while(car.state.right_color_sensor[-1] != 'o'):
         print(car.state.right_color_sensor) #this may be white
         car.update(0.05)
 
     car.turn_right(TURN_SPEED)
-    while(car.state.right_color_sensor[-1] == 'y' or car.state.right_color_sensor[-1] == 'o' or car.state.right_color_sensor[-1] == 'r'):
+    while(car.state.right_color_sensor[-1] == 'o'):
         car.update(0.05)
 
     while True:
         car.update(0.05)
-        if car.state.right_color_sensor[-1] == 'y' or car.state.right_color_sensor[-1] == 'o' or car.state.right_color_sensor[-1] == 'r':
+        if car.state.right_color_sensor[-1] == 'o':
             time.sleep(0.1) #adjust to overshoot
             car.wheel_left(TURN_SPEED) #if this makes no sense its because the ports are wrong so ignore
             car.wheel_right(150)
