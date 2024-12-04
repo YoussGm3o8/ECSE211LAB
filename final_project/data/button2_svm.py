@@ -41,7 +41,7 @@ def normalize(pixel):
 
 def get_base(pixel):
     dist = pixel[0] ** 2 + pixel[1] ** 2 + pixel[2] ** 2
-    if predict(pixel)[-1] == "y" and dist > 800 and dist < 15000:
+    if predict(pixel)[-1] == "y" and dist > 800 and dist < 2000:
         return True
     return False
 

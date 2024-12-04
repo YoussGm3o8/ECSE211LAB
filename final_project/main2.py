@@ -130,21 +130,34 @@ def check_wall(car):
 def rotate(car, sp=20):
     while True:
         car.update(0.05)
+        avoid_water(car)
         if car.right_color_sensor.get_base():
             car.stop()
-            car.turn_left(TURN_SPEED, 70)
-            car.wait_for_action()
-            car.reverse(100, 7)
+            car.forward(220, 30)
             car.wait_for_action()
             car.dump_cubes()
             print("success! hopefully...")
             exit()
+        if car.state.us_sensor == 255.0:
+            car.reverse(200, 2)
+            car.wait_for_action()
+            car.turn_left(TURN_SPEED)
+
         if car.state.us_sensor > sp:
             car.wheel_right.set_dps(FORWARD_SPEED + 100)
             car.wheel_left.set_dps(FORWARD_SPEED)
             while car.state.us_sensor > sp:
+                car.wheel_right.set_dps(FORWARD_SPEED + 100)
+                car.wheel_left.set_dps(FORWARD_SPEED)
                 car.update(0.05)
             car.turn_left(TURN_SPEED)
+        if car.state.us_sensor_2 < 14:
+            car.turn_left(TURN_SPEED, 50)
+            while not car.is_stopped:
+                car.update(0.05)
+                if car.right_color_sensor.get_base():
+                    break
+                
 
 
 def return_home(car):
@@ -172,7 +185,7 @@ def return_home(car):
 try:
     ti = time.time()
     car.forward(FORWARD_SPEED)
-    while True:
+    while False:
         clock += 1
         if time.time() - ti > TIMER:
             print("time to return home!")
